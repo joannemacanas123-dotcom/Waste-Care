@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block title %}Pickup Requests - Waste Care{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h1 class="h2 mb-1">Pickup Requests</h1>
+    <p class="text-muted mb-0">Manage your waste pickup appointments</p>
+  </div>
+  <div>
+    <a href="{% url 'core:pickup_create' %}" class="btn btn-primary">
+      <i class="fas fa-plus me-2"></i>New Request
+    </a>
+  </div>
+</div>
+
+<!-- Search and Filter Section -->
+<div class="card mb-4">
+  <div class="card-body">
+    <form method="get" class="row g-3">
+      <div class="col-md-4">
+        <label for="search" class="form-label">Search</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-search"></i></span>
+          <input type="text" class="form-control" id="search" name="search" 
+                 placeholder="Search by address or notes..." value="{{ request.GET.search }}">
+        </div>
+      </div>
+      <div class="col-md-3">
+        <label for="status" class="form-label">Status</label>
+        <select class="form-select" id="status" name="status">
+          <option value="">All Statuses</option>
+          <option value="requested" {% if request.GET.status == 'requested' %}selected{% endif %}>Requested</option>
+          <option value="scheduled" {% if request.GET.status == 'scheduled' %}selected{% endif %}>Scheduled</option>
+          <option value="in_progress" {% if request.GET.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+          <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>Completed</option>
+          <option value="cancelled" {% if request.GET.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label for="date_from" class="form-label">Date From</label>
+        <input type="date" class="form-control" id="date_from" name="date_from" value="{{ request.GET.date_from }}">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">&nbsp;</label>
+        <div class="d-grid">
+          <button type="submit" class="btn btn-outline-primary">
+            <i class="fas fa-filter me-1"></i>Filter
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Results Summary -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <span class="text-muted">{{ appointments|length }} appointment{{ appointments|length|pluralize }} found</span>
+  </div>
+  <div class="btn-group" role="group">
+    <input type="radio" class="btn-check" name="view" id="grid-view" checked>
+    <label class="btn btn-outline-secondary btn-sm" for="grid-view">
+      <i class="fas fa-th"></i>
+    </label>
+    <input type="radio" class="btn-check" name="view" id="list-view">
+    <label class="btn btn-outline-secondary btn-sm" for="list-view">
+      <i class="fas fa-list"></i>
+    </label>
+  </div>
+</div>
+
+<!-- Appointments Grid -->
+<div id="appointments-grid" class="row g-4">
+  {% for a in appointments %}
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 appointment-card" data-status="{{ a.status }}">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span class="badge status-{{ a.status }}">{{ a.get_status_display }}</span>
+          <small class="text-muted">#{{ a.id }}</small>
+        </div>
+        <div class="card-body">
+          <h6 class="card-title">
+            <i class="fas fa-map-marker-alt text-muted me-1"></i>
+            {{ a.address|truncatechars:30 }}
+          </h6>
+          <div class="mb-2">
+            <small class="text-muted d-block">
+              <i class="fas fa-calendar me-1"></i>{{ a.preferred_date|date:"M d, Y" }}
+            </small>
+            <small class="text-muted d-block">
+              <i class="fas fa-clock me-1"></i>{{ a.preferred_time|time:"g:i A" }}
+            </small>
+          </div>
+          {% if a.notes %}
+            <p class="card-text small text-muted">
+              <i class="fas fa-sticky-note me-1"></i>
+              {{ a.notes|truncatechars:50 }}
+            </p>
+          {% endif %}
+          <div class="text-muted small mb-2">
+            <i class="fas fa-clock me-1"></i>Created {{ a.created_at|timesince }} ago
+          </div>
+        </div>
+        <div class="card-footer bg-transparent">
+          <div class="d-flex gap-2">
+            <a href="{% url 'core:pickup_detail' a.pk %}" class="btn btn-sm btn-outline-primary flex-fill">
+              <i class="fas fa-eye me-1"></i>View
+            </a>
+            {% if a.customer == request.user and a.status in 'requested,scheduled' %}
+              <a href="{% url 'core:pickup_update' a.pk %}" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-edit"></i>
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="col-12">
+      <div class="text-center py-5">
+        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+        <h5 class="text-muted">No appointments found</h5>
+        <p class="text-muted mb-3">
+          {% if request.GET.search or request.GET.status or request.GET.date_from %}
+            Try adjusting your search criteria or 
+            <a href="{% url 'core:pickup_list' %}" class="text-decoration-none">clear filters</a>.
+          {% else %}
+            You haven't scheduled any pickup requests yet.
+          {% endif %}
+        </p>
+        {% if not request.GET.search and not request.GET.status and not request.GET.date_from %}
+          <a href="{% url 'core:pickup_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Schedule Your First Pickup
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<!-- List View (Hidden by default) -->
+<div id="appointments-list" class="d-none">
+  <div class="card">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>ID</th>
+            <th>Address</th>
+            <th>Date & Time</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in appointments %}
+            <tr>
+              <td><span class="badge bg-light text-dark">#{{ a.id }}</span></td>
+              <td>
+                <div class="fw-semibold">{{ a.address|truncatechars:40 }}</div>
+                {% if a.notes %}
+                  <small class="text-muted">{{ a.notes|truncatechars:30 }}</small>
+                {% endif %}
+              </td>
+              <td>
+                <div>{{ a.preferred_date|date:"M d, Y" }}</div>
+                <small class="text-muted">{{ a.preferred_time|time:"g:i A" }}</small>
+              </td>
+              <td><span class="badge status-{{ a.status }}">{{ a.get_status_display }}</span></td>
+              <td><small class="text-muted">{{ a.created_at|timesince }} ago</small></td>
+              <td>
+                <div class="btn-group btn-group-sm">
+                  <a href="{% url 'core:pickup_detail' a.pk %}" class="btn btn-outline-primary">
+                    <i class="fas fa-eye"></i>
+                  </a>
+                  {% if a.customer == request.user and a.status in 'requested,scheduled' %}
+                    <a href="{% url 'core:pickup_update' a.pk %}" class="btn btn-outline-secondary">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // View toggle functionality
+    const gridView = document.getElementById('grid-view');
+    const listView = document.getElementById('list-view');
+    const appointmentsGrid = document.getElementById('appointments-grid');
+    const appointmentsList = document.getElementById('appointments-list');
+    
+    gridView.addEventListener('change', function() {
+        if (this.checked) {
+            appointmentsGrid.classList.remove('d-none');
+            appointmentsList.classList.add('d-none');
+        }
+    });
+    
+    listView.addEventListener('change', function() {
+        if (this.checked) {
+            appointmentsGrid.classList.add('d-none');
+            appointmentsList.classList.remove('d-none');
+        }
+    });
+    
+    // Auto-submit form on filter change
+    const statusSelect = document.getElementById('status');
+    const dateFromInput = document.getElementById('date_from');
+    
+    [statusSelect, dateFromInput].forEach(element => {
+        if (element) {
+            element.addEventListener('change', function() {
+                this.form.submit();
+            });
+        }
+    });
+    
+    // Clear filters functionality
+    const clearFiltersBtn = document.createElement('button');
+    clearFiltersBtn.type = 'button';
+    clearFiltersBtn.className = 'btn btn-outline-secondary ms-2';
+    clearFiltersBtn.innerHTML = '<i class="fas fa-times me-1"></i>Clear';
+    clearFiltersBtn.onclick = function() {
+        window.location.href = '{% url "core:pickup_list" %}';
+    };
+    
+    const filterBtn = document.querySelector('button[type="submit"]');
+    if (filterBtn) {
+        filterBtn.parentNode.appendChild(clearFiltersBtn);
+    }
+});
+</script>
+{% endblock %}

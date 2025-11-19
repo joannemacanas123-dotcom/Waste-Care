@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card p-4">
+  <h3 class="mb-3">Appointment Details</h3>
+  <dl class="row">
+    <dt class="col-sm-3">Date</dt><dd class="col-sm-9">{{ appointment.preferred_date }}</dd>
+    <dt class="col-sm-3">Time</dt><dd class="col-sm-9">{{ appointment.preferred_time }}</dd>
+    <dt class="col-sm-3">Address</dt><dd class="col-sm-9">{{ appointment.address }}</dd>
+    <dt class="col-sm-3">Status</dt><dd class="col-sm-9"><span class="badge bg-secondary">{{ appointment.status }}</span></dd>
+    <dt class="col-sm-3">Notes</dt><dd class="col-sm-9">{{ appointment.notes|default:'—' }}</dd>
+  </dl>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="{% url 'core:pickup_update' appointment.pk %}">Edit</a>
+    <form method="post" action="{% url 'core:pickup_delete' appointment.pk %}">{% csrf_token %}
+      <button class="btn btn-outline-danger">Delete</button>
+    </form>
+    <a class="btn btn-outline-primary" href="{% url 'core:pickup_list' %}">Back</a>
+  </div>
+  </div>
+{% endblock %}
+
+

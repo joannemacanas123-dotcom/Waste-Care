@@ -1,0 +1,507 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Search Appointments - Waste Care{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-3">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="mb-1">
+                <i class="fas fa-search me-2 text-primary"></i>
+                Search & Filter Appointments
+            </h2>
+            <p class="text-muted mb-0">Find and manage appointments with advanced filtering</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'core:smart_scheduling' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>New Appointment
+            </a>
+        </div>
+    </div>
+
+    <!-- Search and Filter Form -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-filter me-2"></i>Search Filters
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3" id="searchForm">
+                <div class="col-md-4">
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="searchQuery" name="q" value="{{ current_filters.q }}" placeholder="Search...">
+                        <label for="searchQuery">
+                            <i class="fas fa-search me-2"></i>Search Keywords
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="col-md-2">
+                    <div class="form-floating">
+                        <select class="form-select" id="statusFilter" name="status">
+                            <option value="">All Statuses</option>
+                            {% for value, display in status_choices %}
+                                <option value="{{ value }}" {% if current_filters.status == value %}selected{% endif %}>
+                                    {{ display }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <label for="statusFilter">Status</label>
+                    </div>
+                </div>
+                
+                <div class="col-md-2">
+                    <div class="form-floating">
+                        <select class="form-select" id="wasteTypeFilter" name="waste_type">
+                            <option value="">All Types</option>
+                            {% for value, display in waste_type_choices %}
+                                <option value="{{ value }}" {% if current_filters.waste_type == value %}selected{% endif %}>
+                                    {{ display }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <label for="wasteTypeFilter">Waste Type</label>
+                    </div>
+                </div>
+                
+                <div class="col-md-2">
+                    <div class="form-floating">
+                        <input type="date" class="form-control" id="dateFrom" name="date_from" value="{{ current_filters.date_from }}">
+                        <label for="dateFrom">From Date</label>
+                    </div>
+                </div>
+                
+                <div class="col-md-2">
+                    <div class="form-floating">
+                        <input type="date" class="form-control" id="dateTo" name="date_to" value="{{ current_filters.date_to }}">
+                        <label for="dateTo">To Date</label>
+                    </div>
+                </div>
+                
+                <div class="col-12">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search me-2"></i>Search
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="clearFilters()">
+                            <i class="fas fa-times me-2"></i>Clear Filters
+                        </button>
+                        <button type="button" class="btn btn-outline-info" onclick="exportResults()">
+                            <i class="fas fa-download me-2"></i>Export
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quick Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex flex-wrap gap-2">
+                <span class="text-muted me-3">Quick Filters:</span>
+                <button class="btn btn-sm btn-outline-primary quick-filter" data-filter="status=requested">
+                    <i class="fas fa-clock me-1"></i>Pending Requests
+                </button>
+                <button class="btn btn-sm btn-outline-info quick-filter" data-filter="status=scheduled">
+                    <i class="fas fa-calendar-check me-1"></i>Scheduled Today
+                </button>
+                <button class="btn btn-sm btn-outline-success quick-filter" data-filter="status=completed">
+                    <i class="fas fa-check-circle me-1"></i>Completed
+                </button>
+                <button class="btn btn-sm btn-outline-warning quick-filter" data-filter="waste_type=hazardous">
+                    <i class="fas fa-exclamation-triangle me-1"></i>Hazardous Waste
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="fas fa-list me-2"></i>
+                Search Results
+                {% if page_obj %}
+                    <span class="badge bg-primary ms-2">{{ page_obj.paginator.count }} found</span>
+                {% endif %}
+            </h5>
+            <div class="btn-group btn-group-sm" role="group">
+                <button type="button" class="btn btn-outline-secondary active" onclick="toggleView('list')">
+                    <i class="fas fa-list"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary" onclick="toggleView('grid')">
+                    <i class="fas fa-th"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="card-body p-0">
+            {% if page_obj %}
+                <!-- List View -->
+                <div id="listView" class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>
+                                    <input type="checkbox" class="form-check-input" id="selectAll">
+                                </th>
+                                <th>Date & Time</th>
+                                <th>Customer</th>
+                                <th>Address</th>
+                                <th>Waste Type</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appointment in page_obj %}
+                                <tr class="appointment-row" data-id="{{ appointment.id }}">
+                                    <td>
+                                        <input type="checkbox" class="form-check-input appointment-checkbox" value="{{ appointment.id }}">
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">{{ appointment.preferred_date }}</div>
+                                        <small class="text-muted">{{ appointment.preferred_time }}</small>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-sm me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-semibold">{{ appointment.customer.get_full_name|default:appointment.customer.username }}</div>
+                                                <small class="text-muted">{{ appointment.customer.email }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="text-truncate" style="max-width: 200px;" title="{{ appointment.address }}">
+                                            {{ appointment.address }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ appointment.get_waste_type_display }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ appointment.status|default:'secondary' }}">
+                                            {{ appointment.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ appointment.priority|default:'secondary' }}">
+                                            {{ appointment.get_priority_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="{% url 'core:pickup_detail' appointment.pk %}" class="btn btn-outline-primary" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            {% if user.role != 'customer' or appointment.customer == user %}
+                                                <a href="{% url 'core:pickup_update' appointment.pk %}" class="btn btn-outline-secondary" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            {% endif %}
+                                            {% if user.role in 'staff,admin,driver' %}
+                                                <button type="button" class="btn btn-outline-success" onclick="quickStatusUpdate({{ appointment.id }})" title="Update Status">
+                                                    <i class="fas fa-sync-alt"></i>
+                                                </button>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Grid View (Hidden by default) -->
+                <div id="gridView" class="d-none p-3">
+                    <div class="row">
+                        {% for appointment in page_obj %}
+                            <div class="col-lg-4 col-md-6 mb-3">
+                                <div class="card appointment-card h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <span class="badge bg-{{ appointment.status|default:'secondary' }}">
+                                                {{ appointment.get_status_display }}
+                                            </span>
+                                            <span class="badge bg-{{ appointment.priority|default:'secondary' }}">
+                                                {{ appointment.get_priority_display }}
+                                            </span>
+                                        </div>
+                                        
+                                        <h6 class="card-title">{{ appointment.get_waste_type_display }}</h6>
+                                        
+                                        <div class="mb-2">
+                                            <small class="text-muted d-block">
+                                                <i class="fas fa-user me-1"></i>
+                                                {{ appointment.customer.get_full_name|default:appointment.customer.username }}
+                                            </small>
+                                            <small class="text-muted d-block">
+                                                <i class="fas fa-calendar me-1"></i>
+                                                {{ appointment.preferred_date }} at {{ appointment.preferred_time }}
+                                            </small>
+                                            <small class="text-muted d-block">
+                                                <i class="fas fa-map-marker-alt me-1"></i>
+                                                {{ appointment.address|truncatechars:30 }}
+                                            </small>
+                                        </div>
+                                        
+                                        <div class="d-flex gap-1">
+                                            <a href="{% url 'core:pickup_detail' appointment.pk %}" class="btn btn-sm btn-outline-primary flex-fill">
+                                                <i class="fas fa-eye me-1"></i>View
+                                            </a>
+                                            {% if user.role != 'customer' or appointment.customer == user %}
+                                                <a href="{% url 'core:pickup_update' appointment.pk %}" class="btn btn-sm btn-outline-secondary">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                {% if page_obj.has_other_pages %}
+                    <div class="card-footer">
+                        <nav aria-label="Search results pagination">
+                            <ul class="pagination pagination-sm justify-content-center mb-0">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?{% for key, value in current_filters.items %}{% if value %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                
+                                {% for num in page_obj.paginator.page_range %}
+                                    {% if page_obj.number == num %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ num }}</span>
+                                        </li>
+                                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?{% for key, value in current_filters.items %}{% if value %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ num }}">{{ num }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?{% for key, value in current_filters.items %}{% if value %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No appointments found</h5>
+                    <p class="text-muted">Try adjusting your search criteria or create a new appointment.</p>
+                    <a href="{% url 'core:smart_scheduling' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Create New Appointment
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Bulk Actions Modal -->
+    <div class="modal fade" id="bulkActionsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bulk Actions</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Selected <span id="selectedCount">0</span> appointments</p>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary" onclick="bulkStatusUpdate('scheduled')">
+                            <i class="fas fa-calendar-check me-2"></i>Mark as Scheduled
+                        </button>
+                        <button class="btn btn-outline-success" onclick="bulkStatusUpdate('completed')">
+                            <i class="fas fa-check-circle me-2"></i>Mark as Completed
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="bulkStatusUpdate('cancelled')">
+                            <i class="fas fa-times-circle me-2"></i>Mark as Cancelled
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.avatar-sm {
+    width: 32px;
+    height: 32px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.8rem;
+}
+
+.appointment-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid #e9ecef;
+}
+
+.appointment-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.appointment-row:hover {
+    background-color: rgba(102, 126, 234, 0.05);
+}
+
+.quick-filter {
+    transition: all 0.2s;
+}
+
+.quick-filter:hover {
+    transform: translateY(-1px);
+}
+
+.bg-requested { background-color: #ffc107 !important; }
+.bg-scheduled { background-color: #17a2b8 !important; }
+.bg-in_progress { background-color: #fd7e14 !important; }
+.bg-completed { background-color: #28a745 !important; }
+.bg-cancelled { background-color: #dc3545 !important; }
+
+.bg-low { background-color: #28a745 !important; }
+.bg-normal { background-color: #17a2b8 !important; }
+.bg-high { background-color: #ffc107 !important; }
+.bg-urgent { background-color: #dc3545 !important; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Quick filters
+    document.querySelectorAll('.quick-filter').forEach(button => {
+        button.addEventListener('click', function() {
+            const filter = this.dataset.filter;
+            const [key, value] = filter.split('=');
+            
+            // Update form field
+            const field = document.querySelector(`[name="${key}"]`);
+            if (field) {
+                field.value = value;
+                document.getElementById('searchForm').submit();
+            }
+        });
+    });
+    
+    // Select all functionality
+    document.getElementById('selectAll').addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.appointment-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+        updateBulkActions();
+    });
+    
+    // Individual checkbox handling
+    document.querySelectorAll('.appointment-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', updateBulkActions);
+    });
+    
+    function updateBulkActions() {
+        const selected = document.querySelectorAll('.appointment-checkbox:checked');
+        const count = selected.length;
+        
+        document.getElementById('selectedCount').textContent = count;
+        
+        if (count > 0) {
+            // Show bulk actions button if not exists
+            let bulkBtn = document.getElementById('bulkActionsBtn');
+            if (!bulkBtn) {
+                bulkBtn = document.createElement('button');
+                bulkBtn.id = 'bulkActionsBtn';
+                bulkBtn.className = 'btn btn-outline-primary btn-sm ms-2';
+                bulkBtn.innerHTML = '<i class="fas fa-tasks me-1"></i>Bulk Actions';
+                bulkBtn.setAttribute('data-bs-toggle', 'modal');
+                bulkBtn.setAttribute('data-bs-target', '#bulkActionsModal');
+                
+                const header = document.querySelector('.card-header .btn-group').parentNode;
+                header.appendChild(bulkBtn);
+            }
+            bulkBtn.style.display = 'inline-block';
+        } else {
+            const bulkBtn = document.getElementById('bulkActionsBtn');
+            if (bulkBtn) {
+                bulkBtn.style.display = 'none';
+            }
+        }
+    }
+});
+
+function clearFilters() {
+    document.getElementById('searchForm').reset();
+    window.location.href = window.location.pathname;
+}
+
+function toggleView(viewType) {
+    const listView = document.getElementById('listView');
+    const gridView = document.getElementById('gridView');
+    const buttons = document.querySelectorAll('.btn-group .btn');
+    
+    buttons.forEach(btn => btn.classList.remove('active'));
+    
+    if (viewType === 'grid') {
+        listView.classList.add('d-none');
+        gridView.classList.remove('d-none');
+        buttons[1].classList.add('active');
+    } else {
+        gridView.classList.add('d-none');
+        listView.classList.remove('d-none');
+        buttons[0].classList.add('active');
+    }
+}
+
+function exportResults() {
+    const params = new URLSearchParams(window.location.search);
+    params.set('export', 'csv');
+    window.open(window.location.pathname + '?' + params.toString());
+}
+
+function quickStatusUpdate(appointmentId) {
+    // Implementation for quick status update
+    console.log('Quick status update for appointment:', appointmentId);
+}
+
+function bulkStatusUpdate(status) {
+    const selected = Array.from(document.querySelectorAll('.appointment-checkbox:checked'))
+                          .map(cb => cb.value);
+    
+    if (selected.length === 0) {
+        alert('Please select appointments to update');
+        return;
+    }
+    
+    // Implementation for bulk status update
+    console.log('Bulk status update:', status, 'for appointments:', selected);
+    
+    // Close modal
+    bootstrap.Modal.getInstance(document.getElementById('bulkActionsModal')).hide();
+}
+</script>
+{% endblock %}

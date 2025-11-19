@@ -1,0 +1,123 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg sticky-top">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand d-flex align-items-center" href="{% url 'core:home' %}">
+      <div class="brand-icon me-2">
+        <img src="{% static 'img/image1.jpg' %}" alt="Waste Care logo" class="brand-icon-image">
+      </div>
+      <span class="brand-text">Waste Care</span>
+    </a>
+    
+    <!-- Enhanced Mobile menu button -->
+    <button class="navbar-toggler border-0 p-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="hamburger-menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </button>
+    
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <!-- Main Navigation -->
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'core:home' %}">
+            <i class="fas fa-home me-2"></i>Home
+          </a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle {% if 'dashboard' in request.resolver_match.url_name %}active{% endif %}" href="#" id="dashboardDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'core:dashboard' %}">
+              <i class="fas fa-home me-2"></i>Overview
+            </a></li>
+            <li><a class="dropdown-item" href="{% url 'core:advanced_dashboard' %}">
+              <i class="fas fa-chart-line me-2"></i>Advanced Analytics
+            </a></li>
+          </ul>
+        </li>
+        
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle {% if 'pickup' in request.resolver_match.url_name or 'appointment' in request.resolver_match.url_name or 'scheduling' in request.resolver_match.url_name %}active{% endif %}" href="#" id="appointmentsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-truck me-2"></i>Appointments
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'core:pickup_list' %}">
+              <i class="fas fa-list me-2"></i>All Appointments
+            </a></li>
+            <li><a class="dropdown-item" href="{% url 'core:smart_scheduling' %}">
+              <i class="fas fa-brain me-2"></i>Smart Scheduling
+            </a></li>
+            <li><a class="dropdown-item" href="{% url 'core:appointment_calendar' %}">
+              <i class="fas fa-calendar me-2"></i>Calendar View
+            </a></li>
+            <li><a class="dropdown-item" href="{% url 'core:pickup_map' %}">
+              <i class="fas fa-map-marked-alt me-2"></i>Pickup Map
+            </a></li>
+            <li><a class="dropdown-item" href="{% url 'core:appointment_search' %}">
+              <i class="fas fa-search me-2"></i>Search & Filter
+            </a></li>
+          </ul>
+        </li>
+        
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'history' %}active{% endif %}" href="{% url 'core:history' %}">
+            <i class="fas fa-history me-2"></i>History
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'notifications' %}active{% endif %}" href="{% url 'core:notifications' %}">
+            <i class="fas fa-bell me-2"></i>Notifications
+            {% if unread_notifications > 0 %}
+              <span class="notification-badge">{{ unread_notifications }}</span>
+            {% endif %}
+          </a>
+        </li>
+      </ul>
+      
+      <ul class="navbar-nav">
+        {% if user.is_authenticated %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center px-3 py-2" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+              <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                <i class="fas fa-user text-white" style="font-size: 0.875rem;"></i>
+              </div>
+              <span class="fw-semibold">{{ user.username }}</span>
+              {% if user.role == 'staff' or user.role == 'admin' %}
+                <span class="badge bg-primary ms-2">{{ user.role|title }}</span>
+              {% endif %}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0" style="min-width: 200px;">
+              <li><h6 class="dropdown-header text-muted">Account</h6></li>
+              <li><a class="dropdown-item py-2" href="{% url 'core:profile' %}"><i class="fas fa-user me-2 text-primary"></i>Profile</a></li>
+              <li><a class="dropdown-item py-2" href="{% url 'core:settings' %}"><i class="fas fa-cog me-2 text-primary"></i>Settings</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <form method="post" action="{% url 'core:logout' %}" class="d-inline w-100">
+                  {% csrf_token %}
+                  <button class="dropdown-item text-danger py-2" type="submit">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                  </button>
+                </form>
+              </li>
+            </ul>
+          </li>
+        {% else %}
+          <li class="nav-item me-2">
+            <a class="btn btn-outline-primary px-4" href="{% url 'core:login' %}">
+              <i class="fas fa-sign-in-alt me-2"></i>Login
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-primary px-4" href="{% url 'core:register' %}">
+              <i class="fas fa-user-plus me-2"></i>Register
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>

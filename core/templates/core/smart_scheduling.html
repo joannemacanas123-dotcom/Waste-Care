@@ -1,0 +1,355 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Smart Scheduling - Waste Care{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-3">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-gradient-primary text-white">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-brain fa-2x me-3"></i>
+                        <div>
+                            <h3 class="mb-1">Smart Scheduling</h3>
+                            <p class="mb-0 opacity-75">AI-powered optimal pickup scheduling</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-body p-4">
+                    <!-- Scheduling Insights -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="insight-card text-center p-3 border rounded">
+                                <i class="fas fa-lightbulb fa-2x text-warning mb-2"></i>
+                                <h6>Smart Suggestions</h6>
+                                <p class="small text-muted mb-0">AI recommends optimal time slots</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="insight-card text-center p-3 border rounded">
+                                <i class="fas fa-route fa-2x text-info mb-2"></i>
+                                <h6>Route Optimization</h6>
+                                <p class="small text-muted mb-0">Efficient pickup routes</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="insight-card text-center p-3 border rounded">
+                                <i class="fas fa-clock fa-2x text-success mb-2"></i>
+                                <h6>Time Efficiency</h6>
+                                <p class="small text-muted mb-0">Reduced waiting times</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scheduling Form -->
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating">
+                                    {{ form.waste_type }}
+                                    <label for="{{ form.waste_type.id_for_label }}">
+                                        <i class="fas fa-trash me-2"></i>Waste Type
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating">
+                                    {{ form.estimated_weight }}
+                                    <label for="{{ form.estimated_weight.id_for_label }}">
+                                        <i class="fas fa-weight me-2"></i>Estimated Weight (kg)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <div class="form-floating">
+                                    {{ form.address }}
+                                    <label for="{{ form.address.id_for_label }}">
+                                        <i class="fas fa-map-marker-alt me-2"></i>Pickup Address
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="form-floating">
+                                    {{ form.priority }}
+                                    <label for="{{ form.priority.id_for_label }}">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>Priority
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating">
+                                    {{ form.preferred_date }}
+                                    <label for="{{ form.preferred_date.id_for_label }}">
+                                        <i class="fas fa-calendar me-2"></i>Preferred Date
+                                    </label>
+                                </div>
+                                <div class="calendar-insights mt-2">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Red dates indicate high demand
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-clock me-2"></i>Recommended Time Slots
+                                </label>
+                                <div class="time-slots">
+                                    {% for time_slot in recommended_times %}
+                                        <div class="time-slot-option {% if time_slot.recommended %}recommended{% endif %}" 
+                                             data-time="{{ time_slot.time }}" 
+                                             data-load="{{ time_slot.load }}">
+                                            <div class="time">{{ time_slot.time }}</div>
+                                            <div class="load-indicator">
+                                                <span class="badge bg-{{ time_slot.load }}">{{ time_slot.load|title }}</span>
+                                                {% if time_slot.recommended %}
+                                                    <i class="fas fa-star text-warning ms-1"></i>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <input type="hidden" name="preferred_time" id="selected_time">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-floating">
+                                {{ form.notes }}
+                                <label for="{{ form.notes.id_for_label }}">
+                                    <i class="fas fa-sticky-note me-2"></i>Additional Notes
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-floating">
+                                {{ form.special_instructions }}
+                                <label for="{{ form.special_instructions.id_for_label }}">
+                                    <i class="fas fa-exclamation-circle me-2"></i>Special Instructions
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- AI Recommendations Panel -->
+                        <div class="ai-recommendations bg-light p-3 rounded mb-4" style="display: none;">
+                            <h6 class="text-primary mb-2">
+                                <i class="fas fa-robot me-2"></i>AI Recommendations
+                            </h6>
+                            <div id="recommendations-content">
+                                <!-- Dynamic recommendations will be loaded here -->
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'core:dashboard' %}" class="btn btn-outline-secondary me-md-2">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-calendar-check me-2"></i>Schedule Smart Pickup
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.insight-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.insight-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.time-slots {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+}
+
+.time-slot-option {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.time-slot-option:hover {
+    border-color: #6366f1;
+    background-color: #f8f9ff;
+}
+
+.time-slot-option.selected {
+    border-color: #6366f1;
+    background-color: #6366f1;
+    color: white;
+}
+
+.time-slot-option.recommended {
+    border-color: #fbbf24;
+    background-color: #fffbeb;
+}
+
+.time-slot-option.recommended.selected {
+    background-color: #6366f1;
+    border-color: #6366f1;
+}
+
+.time {
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-bottom: 4px;
+}
+
+.load-indicator .badge {
+    font-size: 0.7em;
+}
+
+.bg-low { background-color: #10b981 !important; }
+.bg-medium { background-color: #f59e0b !important; }
+.bg-high { background-color: #ef4444 !important; }
+
+.ai-recommendations {
+    border-left: 4px solid #6366f1;
+}
+
+.calendar-insights {
+    font-size: 0.85em;
+}
+
+/* Date picker styling for busy dates */
+.flatpickr-day.busy {
+    background-color: #fee2e2 !important;
+    color: #dc2626 !important;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Time slot selection
+    const timeSlots = document.querySelectorAll('.time-slot-option');
+    const selectedTimeInput = document.getElementById('selected_time');
+    
+    timeSlots.forEach(slot => {
+        slot.addEventListener('click', function() {
+            // Remove selected class from all slots
+            timeSlots.forEach(s => s.classList.remove('selected'));
+            
+            // Add selected class to clicked slot
+            this.classList.add('selected');
+            
+            // Update hidden input
+            selectedTimeInput.value = this.dataset.time;
+            
+            // Show AI recommendations
+            showAIRecommendations(this.dataset.time, this.dataset.load);
+        });
+    });
+    
+    // Auto-select first recommended slot
+    const recommendedSlot = document.querySelector('.time-slot-option.recommended');
+    if (recommendedSlot) {
+        recommendedSlot.click();
+    }
+    
+    // Form change listeners for AI recommendations
+    const formInputs = document.querySelectorAll('select, input[type="date"]');
+    formInputs.forEach(input => {
+        input.addEventListener('change', updateRecommendations);
+    });
+});
+
+function showAIRecommendations(time, load) {
+    const panel = document.querySelector('.ai-recommendations');
+    const content = document.getElementById('recommendations-content');
+    
+    let recommendations = [];
+    
+    if (load === 'low') {
+        recommendations.push('✅ Excellent choice! Low traffic time slot.');
+        recommendations.push('🚚 Faster pickup times expected.');
+    } else if (load === 'medium') {
+        recommendations.push('⚠️ Moderate traffic expected.');
+        recommendations.push('⏰ Consider earlier or later slots for faster service.');
+    } else {
+        recommendations.push('🔴 High demand time slot.');
+        recommendations.push('⏳ Longer wait times possible.');
+        recommendations.push('💡 Consider rescheduling to a low-demand slot.');
+    }
+    
+    content.innerHTML = recommendations.map(rec => `<div class="mb-1">${rec}</div>`).join('');
+    panel.style.display = 'block';
+}
+
+function updateRecommendations() {
+    // Simulate AI recommendation updates based on form changes
+    const wasteType = document.querySelector('select[name="waste_type"]').value;
+    const date = document.querySelector('input[name="preferred_date"]').value;
+    
+    if (wasteType && date) {
+        // Show loading state
+        const content = document.getElementById('recommendations-content');
+        content.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin me-2"></i>Updating recommendations...</div>';
+        
+        // Simulate API call delay
+        setTimeout(() => {
+            let tips = [];
+            
+            if (wasteType === 'organic') {
+                tips.push('🌱 Organic waste: Morning slots recommended for freshness.');
+            } else if (wasteType === 'hazardous') {
+                tips.push('⚠️ Hazardous waste: Special handling protocols apply.');
+                tips.push('📋 Additional documentation may be required.');
+            } else if (wasteType === 'electronic') {
+                tips.push('💻 E-waste: Ensure data is properly wiped from devices.');
+            }
+            
+            tips.push('📍 Route optimization will reduce pickup time by ~15 minutes.');
+            
+            content.innerHTML = tips.map(tip => `<div class="mb-1">${tip}</div>`).join('');
+        }, 1000);
+    }
+}
+
+// Initialize date picker with busy dates highlighting
+const busyDates = {{ busy_dates|safe }};
+flatpickr('input[name="preferred_date"]', {
+    minDate: "today",
+    dateFormat: "Y-m-d",
+    onDayCreate: function(dObj, dStr, fp, dayElem) {
+        const date = dayElem.dateObj.toISOString().split('T')[0];
+        if (busyDates.includes(date)) {
+            dayElem.classList.add('busy');
+            dayElem.title = 'High demand day - consider alternative dates';
+        }
+    }
+});
+</script>
+
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+{% endblock %}

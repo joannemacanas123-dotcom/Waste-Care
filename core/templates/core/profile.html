@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Waste Care{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-6">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="floating-card fade-in">
+        <div class="card-header border-0 bg-transparent text-center pb-0">
+          <div class="mb-4">
+            <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px; background: var(--gradient-nature); box-shadow: 0 8px 24px rgba(82, 196, 26, 0.3);">
+              <i class="fas fa-user text-white fa-3x"></i>
+            </div>
+            <h2 class="gradient-text mb-2 fw-bold">My Profile</h2>
+            <p class="text-muted">View your account information</p>
+          </div>
+        </div>
+        
+        <div class="card-body pt-0">
+          <div class="row g-4">
+            <div class="col-md-6">
+              <div class="p-3 rounded" style="background: var(--success-50);">
+                <label class="text-muted small mb-1"><i class="fas fa-user me-2"></i>Username</label>
+                <p class="mb-0 fw-semibold">{{ user.username }}</p>
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="p-3 rounded" style="background: var(--success-50);">
+                <label class="text-muted small mb-1"><i class="fas fa-envelope me-2"></i>Email</label>
+                <p class="mb-0 fw-semibold">{{ user.email|default:"Not provided" }}</p>
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="p-3 rounded" style="background: var(--success-50);">
+                <label class="text-muted small mb-1"><i class="fas fa-user-tag me-2"></i>Role</label>
+                <p class="mb-0 fw-semibold">{{ user.get_role_display }}</p>
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="p-3 rounded" style="background: var(--success-50);">
+                <label class="text-muted small mb-1"><i class="fas fa-calendar me-2"></i>Member Since</label>
+                <p class="mb-0 fw-semibold">{{ user.date_joined|date:"F d, Y" }}</p>
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="p-3 rounded" style="background: var(--success-50);">
+                <label class="text-muted small mb-1"><i class="fas fa-user-circle me-2"></i>First Name</label>
+                <p class="mb-0 fw-semibold">{{ user.first_name|default:"Not provided" }}</p>
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="p-3 rounded" style="background: var(--success-50);">
+                <label class="text-muted small mb-1"><i class="fas fa-user-circle me-2"></i>Last Name</label>
+                <p class="mb-0 fw-semibold">{{ user.last_name|default:"Not provided" }}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="d-flex gap-3 justify-content-center mt-5">
+            <a href="{% url 'core:settings' %}" class="btn btn-primary px-4">
+              <i class="fas fa-cog me-2"></i>Edit Profile
+            </a>
+            <a href="{% url 'core:dashboard' %}" class="btn btn-outline-secondary px-4">
+              <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

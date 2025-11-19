@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Welcome Back - Waste Care{% endblock %}
+
+{% block content %}
+<!-- Login Page with Eco Theme -->
+<section class="login-section">
+    <div class="login-background">
+        <div class="floating-elements">
+            <div class="eco-element eco-1">🌿</div>
+            <div class="eco-element eco-2">♻️</div>
+            <div class="eco-element eco-3">🌱</div>
+            <div class="eco-element eco-4">🍃</div>
+            <div class="eco-element eco-5">🌍</div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="row justify-content-center align-items-center min-vh-100">
+            <div class="col-lg-5 col-md-7 col-sm-9">
+                <div class="login-card card">
+                    <!-- Brand Header -->
+                    <div class="login-header text-center">
+                        <div class="brand-logo-large">
+                            <div class="logo-icon">
+                                <img src="/static/img/image1.jpg" alt="Waste Care Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                            </div>
+                        </div>
+                        <h1 class="login-title text-gradient">Welcome Back</h1>
+                        <p class="login-subtitle">Sign in to your <span class="text-gradient">Waste Care</span> account</p>
+                    </div>
+                    
+                    <!-- Login Form -->
+                    <div class="login-body">
+                        <form method="post" class="eco-form" novalidate>
+                            {% csrf_token %}
+                            
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags }} eco-alert">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            <div>{{ message }}</div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            
+                            <!-- Username Field -->
+                            <div class="mb-3">
+                                <label for="id_username" class="form-label">Username</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0">
+                                        <i class="fas fa-user text-success"></i>
+                                    </span>
+                                    <input type="text" name="username" class="form-control border-start-0 ps-0" id="id_username" required>
+                                </div>
+                            </div>
+                            
+                            <!-- Password Field -->
+                            <div class="mb-4">
+                                <label for="id_password" class="form-label">Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0">
+                                        <i class="fas fa-lock text-success"></i>
+                                    </span>
+                                    <input type="password" name="password" class="form-control border-start-0 ps-0" id="id_password" required>
+                                </div>
+                            </div>
+                            
+                            <!-- Sign In Button -->
+                            <button type="submit" class="btn btn-primary w-100 py-3">
+                                <i class="fas fa-sign-in-alt me-2"></i>
+                                SIGN IN
+                            </button>
+                        </form>
+                        
+                        <!-- Register Link -->
+                        <div class="login-footer mt-4 text-center">
+                            <p class="text-muted mb-3">Don't have an account?</p>
+                            <a href="{% url 'core:register' %}" class="btn btn-outline-success w-100 py-2">
+                                <i class="fas fa-user-plus me-2"></i>
+                                Create Account
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block extra_css %}
+<style>
+.login-section {
+    min-height: 100vh;
+    background: url('/static/img/bg6.jpg') center/cover no-repeat;
+    display: flex;
+    align-items: center;
+    padding: 2rem 0;
+    position: relative;
+}
+
+.login-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.login-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.login-header {
+    background: linear-gradient(135deg, rgba(82, 196, 26, 0.1) 0%, rgba(45, 80, 22, 0.05) 100%);
+    padding: 3rem 2rem 2rem;
+    text-align: center;
+}
+
+.logo-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #52c41a, #2d5016);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: white;
+    font-size: 2.5rem;
+    box-shadow: 0 8px 24px rgba(82, 196, 26, 0.3);
+}
+
+.login-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #2d5016;
+}
+
+.login-subtitle {
+    color: #666;
+    font-size: 1rem;
+}
+
+.login-body {
+    padding: 2rem;
+}
+
+.form-label {
+    font-weight: 700;
+    color: #52504e;
+    margin-bottom: 0.75rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.input-group-text {
+    border: 2px solid #b7eb8f;
+    border-right: none;
+    padding: 0.875rem 1rem;
+    background: white;
+    border-radius: 12px 0 0 12px;
+}
+
+.input-group .form-control {
+    border: 2px solid #b7eb8f;
+    border-left: none;
+    padding: 0.875rem 1rem;
+    font-size: 1rem;
+    background: #f6ffed;
+    border-radius: 0 12px 12px 0;
+}
+
+.input-group .form-control:focus {
+    border-color: #52c41a;
+    box-shadow: none;
+    background: white;
+}
+
+.input-group:focus-within .input-group-text {
+    border-color: #52c41a;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #2d5016, #52c41a);
+    border: none;
+    font-weight: 700;
+    letter-spacing: 1px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 12px;
+    font-size: 0.95rem;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(82, 196, 26, 0.4);
+    background: linear-gradient(135deg, #3a6b1e, #5dd426);
+}
+
+.btn-outline-success {
+    border: 2px solid #52c41a;
+    color: #52c41a;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    border-radius: 12px;
+    background: white;
+    letter-spacing: 0.5px;
+}
+
+.btn-outline-success:hover {
+    background: #52c41a;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(82, 196, 26, 0.3);
+}
+
+.eco-alert {
+    background: rgba(255, 77, 79, 0.1);
+    border-left: 4px solid #ff4d4f;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.floating-elements {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.eco-element {
+    position: absolute;
+    font-size: 2rem;
+    opacity: 0.3;
+    animation: float 6s ease-in-out infinite;
+}
+
+.eco-1 { top: 10%; left: 10%; animation-delay: 0s; }
+.eco-2 { top: 20%; right: 15%; animation-delay: 1s; }
+.eco-3 { top: 70%; left: 15%; animation-delay: 2s; }
+.eco-4 { top: 50%; right: 20%; animation-delay: 3s; }
+.eco-5 { top: 80%; right: 10%; animation-delay: 4s; }
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+@media (max-width: 768px) {
+    .login-header {
+        padding: 2rem 1.5rem 1.5rem;
+    }
+    
+    .login-body {
+        padding: 1.5rem;
+    }
+    
+    .login-title {
+        font-size: 1.75rem;
+    }
+    
+    .logo-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Simple form validation
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        const username = document.getElementById('id_username');
+        const password = document.getElementById('id_password');
+        
+        if (!username.value.trim() || !password.value.trim()) {
+            e.preventDefault();
+            alert('Please fill in all fields');
+        }
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}
+
+
+

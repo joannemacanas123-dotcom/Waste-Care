@@ -1,0 +1,370 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Advanced Dashboard - Waste Care{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-3">
+    <!-- Hero Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card gradient-bg text-white">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h1 class="h2 mb-2">Welcome back, {{ user.get_full_name|default:user.username }}!</h1>
+                            <p class="mb-0 opacity-75">Here's your waste management overview</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{% url 'core:smart_scheduling' %}" class="btn btn-light">
+                                    <i class="fas fa-plus me-2"></i>Smart Schedule
+                                </a>
+                                <a href="{% url 'core:appointment_calendar' %}" class="btn btn-outline-light">
+                                    <i class="fas fa-calendar me-2"></i>Calendar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card h-100 metric-card">
+                <div class="card-body text-center">
+                    <div class="metric-icon bg-primary-light mb-3">
+                        <i class="fas fa-calendar-check text-primary"></i>
+                    </div>
+                    <h3 class="h2 mb-1 text-primary">{{ stats.total_appointments }}</h3>
+                    <p class="text-muted mb-0">Total Appointments</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card h-100 metric-card">
+                <div class="card-body text-center">
+                    <div class="metric-icon bg-success-light mb-3">
+                        <i class="fas fa-check-circle text-success"></i>
+                    </div>
+                    <h3 class="h2 mb-1 text-success">{{ stats.completed_appointments }}</h3>
+                    <p class="text-muted mb-0">Completed</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card h-100 metric-card">
+                <div class="card-body text-center">
+                    <div class="metric-icon bg-warning-light mb-3">
+                        <i class="fas fa-clock text-warning"></i>
+                    </div>
+                    <h3 class="h2 mb-1 text-warning">{{ stats.pending_appointments }}</h3>
+                    <p class="text-muted mb-0">Pending</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card h-100 metric-card">
+                <div class="card-body text-center">
+                    <div class="metric-icon bg-info-light mb-3">
+                        <i class="fas fa-percentage text-info"></i>
+                    </div>
+                    <h3 class="h2 mb-1 text-info">{{ stats.completion_rate }}%</h3>
+                    <p class="text-muted mb-0">Completion Rate</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts and Analytics -->
+    <div class="row mb-4">
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>Appointment Trends
+                    </h5>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-primary active" data-period="6m">6M</button>
+                        <button type="button" class="btn btn-outline-primary" data-period="1y">1Y</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="trendsChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-pie me-2"></i>Waste Types
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="wasteTypeChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity and Notifications -->
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>Recent Activity
+                    </h5>
+                    <a href="{% url 'core:appointment_search' %}" class="btn btn-sm btn-outline-primary">
+                        View All
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    {% if recent_appointments %}
+                        <div class="list-group list-group-flush">
+                            {% for appointment in recent_appointments %}
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <div class="status-indicator bg-{{ appointment.status|default:'secondary' }} me-3"></div>
+                                        <div>
+                                            <h6 class="mb-1">{{ appointment.waste_type|title }} Pickup</h6>
+                                            <p class="mb-1 text-muted small">{{ appointment.address|truncatechars:50 }}</p>
+                                            <small class="text-muted">{{ appointment.preferred_date }} at {{ appointment.preferred_time }}</small>
+                                        </div>
+                                    </div>
+                                    <span class="badge bg-{{ appointment.status|default:'secondary' }}">
+                                        {{ appointment.get_status_display }}
+                                    </span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No recent appointments</p>
+                            <a href="{% url 'core:smart_scheduling' %}" class="btn btn-primary">Schedule Your First Pickup</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <!-- Upcoming Appointments -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calendar-day me-2"></i>Upcoming
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if upcoming_appointments %}
+                        {% for appointment in upcoming_appointments %}
+                            <div class="d-flex align-items-center mb-3 {% if not forloop.last %}border-bottom pb-3{% endif %}">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="date-badge">
+                                        <div class="date-day">{{ appointment.preferred_date|date:"d" }}</div>
+                                        <div class="date-month">{{ appointment.preferred_date|date:"M" }}</div>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">{{ appointment.waste_type|title }}</h6>
+                                    <small class="text-muted">{{ appointment.preferred_time }}</small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-3">
+                            <i class="fas fa-calendar-plus fa-2x text-muted mb-2"></i>
+                            <p class="text-muted small mb-0">No upcoming appointments</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bell me-2"></i>Notifications
+                        {% if notifications %}
+                            <span class="badge bg-danger ms-2">{{ notifications|length }}</span>
+                        {% endif %}
+                    </h5>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="markAllRead()">
+                        Mark All Read
+                    </button>
+                </div>
+                <div class="card-body p-0" style="max-height: 300px; overflow-y: auto;">
+                    {% if notifications %}
+                        <div class="list-group list-group-flush">
+                            {% for notification in notifications %}
+                                <div class="list-group-item notification-item" data-id="{{ notification.id }}">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">{{ notification.title }}</h6>
+                                        <small class="text-muted">{{ notification.created_at|timesince }} ago</small>
+                                    </div>
+                                    <p class="mb-1 small">{{ notification.message|truncatechars:100 }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-bell-slash fa-2x text-muted mb-2"></i>
+                            <p class="text-muted small mb-0">No new notifications</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Trends Chart
+const trendsCtx = document.getElementById('trendsChart').getContext('2d');
+const trendsData = {{ chart_data|safe }};
+const trendsChart = new Chart(trendsCtx, {
+    type: 'line',
+    data: {
+        labels: Object.keys(trendsData),
+        datasets: [{
+            label: 'Appointments',
+            data: Object.values(trendsData),
+            borderColor: 'rgb(99, 102, 241)',
+            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Waste Type Chart
+const wasteCtx = document.getElementById('wasteTypeChart').getContext('2d');
+const wasteData = {{ waste_type_data|safe }};
+const wasteChart = new Chart(wasteCtx, {
+    type: 'doughnut',
+    data: {
+        labels: wasteData.map(item => item.waste_type.charAt(0).toUpperCase() + item.waste_type.slice(1)),
+        datasets: [{
+            data: wasteData.map(item => item.count),
+            backgroundColor: [
+                '#6366f1',
+                '#10b981',
+                '#f59e0b',
+                '#ef4444',
+                '#8b5cf6',
+                '#06b6d4'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// Mark notifications as read
+function markAllRead() {
+    fetch('/notifications/mark-all-read/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json'
+        }
+    }).then(response => {
+        if (response.ok) {
+            location.reload();
+        }
+    });
+}
+</script>
+
+<style>
+.gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.metric-card {
+    transition: transform 0.2s;
+}
+
+.metric-card:hover {
+    transform: translateY(-5px);
+}
+
+.metric-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.bg-primary-light { background-color: rgba(99, 102, 241, 0.1); }
+.bg-success-light { background-color: rgba(16, 185, 129, 0.1); }
+.bg-warning-light { background-color: rgba(245, 158, 11, 0.1); }
+.bg-info-light { background-color: rgba(6, 182, 212, 0.1); }
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.date-badge {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 8px;
+    text-align: center;
+    min-width: 50px;
+}
+
+.date-day {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.date-month {
+    font-size: 0.8em;
+    color: #6c757d;
+    text-transform: uppercase;
+}
+
+.notification-item {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.notification-item:hover {
+    background-color: #f8f9fa;
+}
+</style>
+{% endblock %}

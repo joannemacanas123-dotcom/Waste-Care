@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Service History</h2>
+<div class="card p-3">
+  <table class="table">
+    <thead><tr><th>Completed At</th><th>Address</th><th>Notes</th></tr></thead>
+    <tbody>
+      {% for h in history %}
+        <tr>
+          <td>{{ h.completed_at }}</td>
+          <td>{{ h.appointment.address }}</td>
+          <td>{{ h.staff_notes|default:'—' }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="3">No completed services yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+{% endblock %}
+
+
+
