@@ -1641,10 +1641,7 @@ body {
 }
 
 .brand-text {
-  background: linear-gradient(135deg, white, rgba(255, 255, 255, 0.9));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #00a86b !important;
   font-weight: 800;
   letter-spacing: 1px;
 }
