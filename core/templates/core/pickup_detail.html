@@ -3,6 +3,7 @@
 <div class="card p-4">
   <h3 class="mb-3">Appointment Details</h3>
   <dl class="row">
+    <dt class="col-sm-3">Pickup Day</dt><dd class="col-sm-9">{{ appointment.get_pickup_day_display }}</dd>
     <dt class="col-sm-3">Date</dt><dd class="col-sm-9">{{ appointment.preferred_date }}</dd>
     <dt class="col-sm-3">Time</dt><dd class="col-sm-9">{{ appointment.preferred_time }}</dd>
     <dt class="col-sm-3">Address</dt><dd class="col-sm-9">{{ appointment.address }}</dd>

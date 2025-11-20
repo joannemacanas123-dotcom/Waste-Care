@@ -122,21 +122,20 @@ def dashboard(request):
     recent_notifications = Notification.objects.filter(user=request.user).order_by('-created_at')[:3]
     unread_notifications = Notification.objects.filter(user=request.user, is_read=False).count()
     
-    # Generate chart data for the last 7 days
-    end_date = datetime.now().date()
-    start_date = end_date - timedelta(days=6)
+    # Generate chart data by pickup day
+    days_order = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+    day_labels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     
     chart_labels = []
     chart_data = []
     
-    for i in range(7):
-        date = start_date + timedelta(days=i)
-        chart_labels.append(date.strftime('%a'))
+    for day in days_order:
+        chart_labels.append(day_labels[days_order.index(day)])
         
         if is_staff_like(request.user):
-            count = Appointment.objects.filter(created_at__date=date).count()
+            count = Appointment.objects.filter(pickup_day=day).count()
         else:
-            count = Appointment.objects.filter(customer=request.user, created_at__date=date).count()
+            count = Appointment.objects.filter(customer=request.user, pickup_day=day).count()
         chart_data.append(count)
     
     # Status distribution data
@@ -393,3 +392,8 @@ def settings_view(request):
         form = UserProfileForm(instance=request.user)
     
     return render(request, "core/settings.html", {"form": form})
+
+
+def tutorial_view(request):
+    """Display user tutorial/guide"""
+    return render(request, "core/tutorial.html")

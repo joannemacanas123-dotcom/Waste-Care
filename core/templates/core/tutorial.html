@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+
+{% block title %}User Guide - Waste Care{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-6">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <!-- Header -->
+      <div class="text-center mb-5">
+        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; background: var(--gradient-nature); box-shadow: 0 8px 24px rgba(82, 196, 26, 0.3);">
+          <i class="fas fa-book-open text-white fa-2x"></i>
+        </div>
+        <h1 class="gradient-text mb-2 fw-bold">User Guide</h1>
+        <p class="text-muted fs-5">Learn how to use Waste Care step by step</p>
+      </div>
+
+      <!-- Step 1: Registration -->
+      <div class="floating-card mb-4 fade-in">
+        <div class="card-body">
+          <div class="d-flex align-items-start">
+            <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-4" style="width: 48px; height: 48px; min-width: 48px;">
+              <span class="text-white fw-bold">1</span>
+            </div>
+            <div class="flex-grow-1">
+              <h4 class="fw-bold mb-3"><i class="fas fa-user-plus me-2 text-primary"></i>Create Your Account</h4>
+              <p class="text-muted mb-3">Start by creating your Waste Care account to access all features.</p>
+              <ol class="mb-3">
+                <li class="mb-2">Click the <strong>"Register"</strong> button on the homepage</li>
+                <li class="mb-2">Fill in your username, email, and password</li>
+                <li class="mb-2">Select your role (Customer for regular users)</li>
+                <li class="mb-2">Click <strong>"Create Account"</strong> to complete registration</li>
+              </ol>
+              <div class="alert alert-info border-0 mb-0" style="background: rgba(59, 130, 246, 0.1);">
+                <i class="fas fa-lightbulb me-2"></i>
+                <strong>Tip:</strong> Use a valid email address to receive appointment confirmations and updates.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Login -->
+      <div class="floating-card mb-4 fade-in" style="animation-delay: 0.1s;">
+        <div class="card-body">
+          <div class="d-flex align-items-start">
+            <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-4" style="width: 48px; height: 48px; min-width: 48px;">
+              <span class="text-white fw-bold">2</span>
+            </div>
+            <div class="flex-grow-1">
+              <h4 class="fw-bold mb-3"><i class="fas fa-sign-in-alt me-2 text-primary"></i>Login to Your Account</h4>
+              <p class="text-muted mb-3">Access your dashboard by logging in.</p>
+              <ol class="mb-3">
+                <li class="mb-2">Click the <strong>"Login"</strong> button</li>
+                <li class="mb-2">Enter your username and password</li>
+                <li class="mb-2">Click <strong>"Sign In"</strong></li>
+                <li class="mb-2">You'll be redirected to your dashboard</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Schedule Pickup -->
+      <div class="floating-card mb-4 fade-in" style="animation-delay: 0.2s;">
+        <div class="card-body">
+          <div class="d-flex align-items-start">
+            <div class="rounded-circle bg-success d-flex align-items-center justify-content-center me-4" style="width: 48px; height: 48px; min-width: 48px;">
+              <span class="text-white fw-bold">3</span>
+            </div>
+            <div class="flex-grow-1">
+              <h4 class="fw-bold mb-3"><i class="fas fa-calendar-plus me-2 text-success"></i>Schedule a Waste Pickup</h4>
+              <p class="text-muted mb-3">Request a waste collection service in just a few clicks.</p>
+              <ol class="mb-3">
+                <li class="mb-2">Go to <strong>Dashboard</strong> and click <strong>"Schedule Pickup"</strong></li>
+                <li class="mb-2">Select your <strong>Waste Type</strong> (General, Recyclable, Organic, etc.)</li>
+                <li class="mb-2">Enter your complete <strong>Pickup Address</strong></li>
+                <li class="mb-2">Choose your preferred <strong>Pickup Day</strong> (Monday-Sunday)</li>
+                <li class="mb-2">Click on the map to set your exact location</li>
+                <li class="mb-2">Select your <strong>Preferred Date</strong> and <strong>Time</strong></li>
+                <li class="mb-2">Set <strong>Priority Level</strong> and estimate the waste weight</li>
+                <li class="mb-2">Add any special instructions or notes</li>
+                <li class="mb-2">Click <strong>"Submit Request"</strong></li>
+              </ol>
+              <div class="alert alert-success border-0 mb-0" style="background: rgba(16, 185, 129, 0.1);">
+                <i class="fas fa-check-circle me-2"></i>
+                <strong>Success:</strong> You'll receive a confirmation email and notification once your request is submitted.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Track Appointments -->
+      <div class="floating-card mb-4 fade-in" style="animation-delay: 0.3s;">
+        <div class="card-body">
+          <div class="d-flex align-items-start">
+            <div class="rounded-circle bg-warning d-flex align-items-center justify-content-center me-4" style="width: 48px; height: 48px; min-width: 48px;">
+              <span class="text-white fw-bold">4</span>
+            </div>
+            <div class="flex-grow-1">
+              <h4 class="fw-bold mb-3"><i class="fas fa-list-check me-2 text-warning"></i>Track Your Appointments</h4>
+              <p class="text-muted mb-3">Monitor the status of your pickup requests.</p>
+              <ol class="mb-3">
+                <li class="mb-2">Navigate to <strong>Appointments → All Appointments</strong></li>
+                <li class="mb-2">View all your pickup requests with their current status</li>
+                <li class="mb-2">Click on any appointment to see full details</li>
+                <li class="mb-2">Use filters to search by status or date</li>
+              </ol>
+              <div class="row g-3 mt-3">
+                <div class="col-md-6">
+                  <div class="p-3 rounded" style="background: rgba(59, 130, 246, 0.1);">
+                    <strong><i class="fas fa-info-circle me-2"></i>Requested:</strong> Waiting for approval
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="p-3 rounded" style="background: rgba(245, 158, 11, 0.1);">
+                    <strong><i class="fas fa-clock me-2"></i>Scheduled:</strong> Approved and scheduled
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="p-3 rounded" style="background: rgba(99, 102, 241, 0.1);">
+                    <strong><i class="fas fa-truck me-2"></i>In Progress:</strong> Team is on the way
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="p-3 rounded" style="background: rgba(16, 185, 129, 0.1);">
+                    <strong><i class="fas fa-check-circle me-2"></i>Completed:</strong> Pickup finished
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5: View Calendar -->
+      <div class="floating-card mb-4 fade-in" style="animation-delay: 0.4s;">
+        <div class="card-body">
+          <div class="d-flex align-items-start">
+            <div class="rounded-circle bg-info d-flex align-items-center justify-content-center me-4" style="width: 48px; height: 48px; min-width: 48px;">
+              <span class="text-white fw-bold">5</span>
+            </div>
+            <div class="flex-grow-1">
+              <h4 class="fw-bold mb-3"><i class="fas fa-calendar me-2 text-info"></i>Use Calendar View</h4>
+              <p class="text-muted mb-3">Visualize your appointments on a calendar.</p>
+              <ol class="mb-3">
+                <li class="mb-2">Go to <strong>Appointments → Calendar View</strong></li>
+                <li class="mb-2">See all your pickups organized by date</li>
+                <li class="mb-2">Click on any date to view appointments</li>
+                <li class="mb-2">Navigate between months using arrow buttons</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 6: Check Notifications -->
+      <div class="floating-card mb-4 fade-in" style="animation-delay: 0.5s;">
+        <div class="card-body">
+          <div class="d-flex align-items-start">
+            <div class="rounded-circle bg-danger d-flex align-items-center justify-content-center me-4" style="width: 48px; height: 48px; min-width: 48px;">
+              <span class="text-white fw-bold">6</span>
+            </div>
+            <div class="flex-grow-1">
+              <h4 class="fw-bold mb-3"><i class="fas fa-bell me-2 text-danger"></i>Stay Updated with Notifications</h4>
+              <p class="text-muted mb-3">Receive real-time updates about your appointments.</p>
+              <ol class="mb-3">
+                <li class="mb-2">Click the <strong>Notifications</strong> icon in the navbar</li>
+                <li class="mb-2">View all your notifications and updates</li>
+                <li class="mb-2">Get notified when your appointment status changes</li>
+                <li class="mb-2">Mark notifications as read after viewing</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 7: View History -->
+      <div class="floating-card mb-4 fade-in" style="animation-delay: 0.6s;">
+        <div class="card-body">
+          <div class="d-flex align-items-start">
+            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-4" style="width: 48px; height: 48px; min-width: 48px;">
+              <span class="text-white fw-bold">7</span>
+            </div>
+            <div class="flex-grow-1">
+              <h4 class="fw-bold mb-3"><i class="fas fa-history me-2 text-secondary"></i>Review Service History</h4>
+              <p class="text-muted mb-3">Access your past completed pickups.</p>
+              <ol class="mb-3">
+                <li class="mb-2">Navigate to <strong>History</strong> in the menu</li>
+                <li class="mb-2">View all your completed waste pickups</li>
+                <li class="mb-2">Check dates, weights, and service details</li>
+                <li class="mb-2">Track your environmental impact over time</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 8: Update Profile -->
+      <div class="floating-card mb-4 fade-in" style="animation-delay: 0.7s;">
+        <div class="card-body">
+          <div class="d-flex align-items-start">
+            <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-4" style="width: 48px; height: 48px; min-width: 48px;">
+              <span class="text-white fw-bold">8</span>
+            </div>
+            <div class="flex-grow-1">
+              <h4 class="fw-bold mb-3"><i class="fas fa-user-cog me-2 text-primary"></i>Manage Your Profile</h4>
+              <p class="text-muted mb-3">Update your account information and settings.</p>
+              <ol class="mb-3">
+                <li class="mb-2">Click your username in the top right corner</li>
+                <li class="mb-2">Select <strong>"Profile"</strong> to view your information</li>
+                <li class="mb-2">Click <strong>"Settings"</strong> to update your details</li>
+                <li class="mb-2">Change your name, email, or other preferences</li>
+                <li class="mb-2">Click <strong>"Save Changes"</strong> when done</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Additional Tips -->
+      <div class="floating-card fade-in" style="animation-delay: 0.8s; background: linear-gradient(135deg, rgba(82, 196, 26, 0.1), rgba(16, 185, 129, 0.1));">
+        <div class="card-body">
+          <h4 class="fw-bold mb-4"><i class="fas fa-lightbulb me-2 text-warning"></i>Helpful Tips</h4>
+          <div class="row g-4">
+            <div class="col-md-6">
+              <div class="d-flex align-items-start">
+                <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                <div>
+                  <strong>Be Specific:</strong> Provide detailed addresses and special instructions for smooth pickups.
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="d-flex align-items-start">
+                <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                <div>
+                  <strong>Plan Ahead:</strong> Schedule pickups at least 24 hours in advance for better service.
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="d-flex align-items-start">
+                <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                <div>
+                  <strong>Separate Waste:</strong> Sort your waste by type for easier recycling and processing.
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="d-flex align-items-start">
+                <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                <div>
+                  <strong>Check Notifications:</strong> Stay updated on your appointment status through notifications.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Need Help Section -->
+      <div class="text-center mt-5">
+        <h5 class="mb-3">Need More Help?</h5>
+        <p class="text-muted mb-4">If you have any questions or need assistance, feel free to reach out to our support team.</p>
+        <a href="{% url 'core:dashboard' %}" class="btn btn-primary btn-lg">
+          <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1597,15 +1597,15 @@ body {
 }
 
 .brand-icon {
-  width: 45px;
-  height: 45px;
+  width: 80px;
+  height: 80px;
   background: linear-gradient(135deg, var(--success-400), var(--recycle-green));
   border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 1.4rem;
+  font-size: 2.2rem;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 
     0 4px 12px rgba(82, 196, 26, 0.3),

@@ -39,6 +39,7 @@ urlpatterns = [
     # Profile and Settings
     path("profile/", views.profile_view, name="profile"),
     path("settings/", views.settings_view, name="settings"),
+    path("tutorial/", views.tutorial_view, name="tutorial"),
     
     # API Endpoints
     path("api/notifications/<int:notification_id>/read/", api_views.mark_notification_read, name="api_mark_notification_read"),

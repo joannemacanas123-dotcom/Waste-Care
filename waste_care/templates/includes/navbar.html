@@ -76,6 +76,12 @@
             {% endif %}
           </a>
         </li>
+        
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'tutorial' %}active{% endif %}" href="{% url 'core:tutorial' %}">
+            <i class="fas fa-book-open me-2"></i>Tutorial
+          </a>
+        </li>
       </ul>
       
       <ul class="navbar-nav">

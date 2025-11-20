@@ -76,6 +76,27 @@
               </div>
             </div>
             
+            <!-- Pickup Day Field -->
+            <div class="mb-4">
+              <div class="form-floating">
+                {{ form.pickup_day }}
+                <label for="{{ form.pickup_day.id_for_label }}">
+                  <i class="fas fa-calendar-day me-2"></i>{{ form.pickup_day.label }}
+                </label>
+              </div>
+              {% if form.pickup_day.errors %}
+                <div class="invalid-feedback d-block mt-2">
+                  {% for error in form.pickup_day.errors %}
+                    <i class="fas fa-exclamation-triangle me-1"></i>{{ error }}
+                  {% endfor %}
+                </div>
+              {% endif %}
+              <div class="form-text mt-2">
+                <i class="fas fa-info-circle me-1 text-info"></i>
+                Select your preferred day of the week for pickup.
+              </div>
+            </div>
+            
             <!-- Map for Location Selection -->
             <div class="mb-4">
               <label class="form-label">

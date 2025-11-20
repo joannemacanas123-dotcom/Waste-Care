@@ -50,7 +50,18 @@ class Appointment(models.Model):
         ("urgent", "Urgent"),
     ]
     
+    DAY_CHOICES = [
+        ("monday", "Monday"),
+        ("tuesday", "Tuesday"),
+        ("wednesday", "Wednesday"),
+        ("thursday", "Thursday"),
+        ("friday", "Friday"),
+        ("saturday", "Saturday"),
+        ("sunday", "Sunday"),
+    ]
+    
     customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="appointments")
+    pickup_day = models.CharField(max_length=10, choices=DAY_CHOICES, default="monday", help_text="Preferred day of the week for pickup")
     address = models.CharField(max_length=255)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, help_text="Latitude coordinate")
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, help_text="Longitude coordinate")
