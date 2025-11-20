@@ -39,7 +39,6 @@ class Appointment(models.Model):
         ("recyclable", "Recyclable"),
         ("organic", "Organic/Compost"),
         ("hazardous", "Hazardous Waste"),
-        ("electronic", "Electronic Waste"),
         ("bulk", "Bulk Items"),
     ]
     

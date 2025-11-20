@@ -87,7 +87,7 @@
           </h6>
           <div class="mb-2">
             <small class="text-muted d-block">
-              <i class="fas fa-calendar me-1"></i>{{ a.preferred_date|date:"M d, Y" }}
+              <i class="fas fa-calendar me-1"></i>{{ a.preferred_date|date:"M d, Y" }} ({{ a.get_pickup_day_display }})
             </small>
             <small class="text-muted d-block">
               <i class="fas fa-clock me-1"></i>{{ a.preferred_time|time:"g:i A" }}
