@@ -1,23 +1,71 @@
 {% extends "base.html" %}
-{% block content %}
-<div class="card p-4">
-  <h3 class="mb-3">Appointment Details</h3>
-  <dl class="row">
-    <dt class="col-sm-3">Pickup Day</dt><dd class="col-sm-9">{{ appointment.get_pickup_day_display }}</dd>
-    <dt class="col-sm-3">Date</dt><dd class="col-sm-9">{{ appointment.preferred_date }}</dd>
-    <dt class="col-sm-3">Time</dt><dd class="col-sm-9">{{ appointment.preferred_time }}</dd>
-    <dt class="col-sm-3">Address</dt><dd class="col-sm-9">{{ appointment.address }}</dd>
-    <dt class="col-sm-3">Status</dt><dd class="col-sm-9"><span class="badge bg-secondary">{{ appointment.status }}</span></dd>
-    <dt class="col-sm-3">Notes</dt><dd class="col-sm-9">{{ appointment.notes|default:'—' }}</dd>
-  </dl>
-  <div class="d-flex gap-2">
-    <a class="btn btn-outline-secondary" href="{% url 'core:pickup_update' appointment.pk %}">Edit</a>
-    <form method="post" action="{% url 'core:pickup_delete' appointment.pk %}">{% csrf_token %}
-      <button class="btn btn-outline-danger">Delete</button>
-    </form>
-    <a class="btn btn-outline-primary" href="{% url 'core:pickup_list' %}">Back</a>
-  </div>
-  </div>
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 {% endblock %}
 
+{% block content %}
+<div class="row">
+  <div class="col-lg-6">
+    <div class="card p-4">
+      <h3 class="mb-3">Appointment Details</h3>
+      <dl class="row">
+        <dt class="col-sm-4">Pickup Day</dt><dd class="col-sm-8">{{ appointment.get_pickup_day_display }}</dd>
+        <dt class="col-sm-4">Date</dt><dd class="col-sm-8">{{ appointment.preferred_date }}</dd>
+        <dt class="col-sm-4">Time</dt><dd class="col-sm-8">{{ appointment.preferred_time }}</dd>
+        <dt class="col-sm-4">Address</dt><dd class="col-sm-8">{{ appointment.address }}</dd>
+        <dt class="col-sm-4">Status</dt><dd class="col-sm-8"><span class="badge bg-secondary">{{ appointment.status }}</span></dd>
+        <dt class="col-sm-4">Notes</dt><dd class="col-sm-8">{{ appointment.notes|default:'—' }}</dd>
+      </dl>
+      <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary" href="{% url 'core:pickup_update' appointment.pk %}">Edit</a>
+        <form method="post" action="{% url 'core:pickup_delete' appointment.pk %}">{% csrf_token %}
+          <button class="btn btn-outline-danger">Delete</button>
+        </form>
+        <a class="btn btn-outline-primary" href="{% url 'core:pickup_list' %}">Back</a>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-6">
+    <div class="card p-4">
+      <h3 class="mb-3">Pickup Location</h3>
+      {% if appointment.latitude and appointment.longitude %}
+        <div id="map" style="height: 300px; border-radius: 8px;"></div>
+      {% else %}
+        <div class="alert alert-info">
+          <i class="fas fa-info-circle"></i> Location coordinates not available for this appointment.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
 
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+{% if appointment.latitude and appointment.longitude %}
+<script type="text/javascript">
+  // noinspection JSUnresolvedVariable
+  document.addEventListener('DOMContentLoaded', function() {
+    // noinspection JSUnusedAssignment
+    var lat = {{ appointment.latitude }};
+    // noinspection JSUnusedAssignment
+    var lng = {{ appointment.longitude }};
+    // noinspection JSUnusedAssignment
+    var address = '{{ appointment.address|escapejs }}';
+    
+    var map = L.map('map').setView([lat, lng], 15);
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+    
+    L.marker([lat, lng])
+      .addTo(map)
+      .bindPopup('<strong>Pickup Location</strong><br>' + address)
+      .openPopup();
+  });
+</script>
+{% endif %}
+{% endblock %}

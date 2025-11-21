@@ -92,7 +92,7 @@ def register_view(request):
             username=form.cleaned_data["username"],
             email=form.cleaned_data.get("email"),
             password=form.cleaned_data["password1"],
-            role=form.cleaned_data.get("role", "customer"),
+            role=form.cleaned_data.get("role", "residents"),
         )
         login(request, user)
         return redirect("core:dashboard")
@@ -243,7 +243,7 @@ def pickup_update(request, pk):
     try:
         appt = Appointment.objects.get(pk=pk)
         
-        # Security check: users can only edit their own appointments unless they're staff
+        # Security check: residents can only edit their own appointments unless they're staff
         if not (is_staff_like(request.user) or appt.customer == request.user):
             messages.error(request, "You don't have permission to edit this appointment.")
             return redirect("core:pickup_list")
@@ -279,7 +279,7 @@ def pickup_delete(request, pk):
     try:
         appt = Appointment.objects.get(pk=pk)
         
-        # Security check: users can only delete their own appointments unless they're staff
+        # Security check: residents can only delete their own appointments unless they're staff
         if not (is_staff_like(request.user) or appt.customer == request.user):
             messages.error(request, "You don't have permission to delete this appointment.")
             return redirect("core:pickup_list")

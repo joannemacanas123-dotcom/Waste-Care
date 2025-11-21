@@ -47,6 +47,7 @@ urlpatterns = [
     path("api/appointments/stats/", api_views.get_appointment_stats, name="api_appointment_stats"),
     path("api/appointments/search/", api_views.search_appointments_api, name="api_search_appointments"),
     path("api/appointments/time-slots/", api_views.get_available_time_slots, name="api_time_slots"),
+    path("api/appointments/<int:appointment_id>/", api_views.get_appointment_details, name="api_appointment_details"),
     path("api/appointments/<int:appointment_id>/update-status/", api_views.update_appointment_status, name="api_update_appointment_status"),
     path("api/route-optimization/", api_views.get_route_optimization, name="api_route_optimization"),
     path("api/map-appointments/", api_views.get_map_appointments, name="api_map_appointments"),

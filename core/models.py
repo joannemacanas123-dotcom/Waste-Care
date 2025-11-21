@@ -5,11 +5,11 @@ from django.utils import timezone
 
 class User(AbstractUser):
     ROLE_CHOICES = [
-        ("customer", "Customer"),
+        ("residents", "Residents"),
         ("staff", "Staff"),
         ("admin", "Admin"),
     ]
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="customer")
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="residents")
 
     def is_staff_like(self) -> bool:
         return self.role in {"staff", "admin"} or super().is_staff

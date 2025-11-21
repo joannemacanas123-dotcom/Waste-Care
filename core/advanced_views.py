@@ -20,12 +20,12 @@ def advanced_dashboard(request):
     
     # Get recent activity
     recent_appointments = Appointment.objects.filter(
-        customer=request.user if request.user.role == 'customer' else None
+        customer=request.user if request.user.role == 'residents' else None
     ).order_by('-created_at')[:5]
     
     # Get upcoming appointments
     upcoming = Appointment.objects.filter(
-        customer=request.user if request.user.role == 'customer' else None,
+        customer=request.user if request.user.role == 'residents' else None,
         preferred_date__gte=timezone.now().date(),
         status__in=['requested', 'scheduled']
     ).order_by('preferred_date')[:3]
@@ -51,7 +51,7 @@ def advanced_dashboard(request):
 def appointment_calendar(request):
     """Calendar view for appointments"""
     # Get appointments for calendar
-    if request.user.role == 'customer':
+    if request.user.role == 'residents':
         appointments = Appointment.objects.filter(customer=request.user)
     else:
         appointments = Appointment.objects.all()

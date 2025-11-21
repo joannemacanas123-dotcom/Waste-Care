@@ -1,10 +1,13 @@
+from django.conf import settings
 from .models import Notification
 
 def navbar_context(request):
     """
     Context processor to add navbar-related data to all templates
     """
-    context = {}
+    context = {
+        'MAPTILER_API_KEY': settings.MAPTILER_API_KEY,
+    }
     
     if request.user.is_authenticated:
         context['unread_notifications'] = Notification.objects.filter(

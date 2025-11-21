@@ -40,7 +40,7 @@ def search_appointments_api(request):
     """API endpoint for appointment search with autocomplete"""
     query = request.GET.get('q', '')
     
-    if request.user.role == 'customer':
+    if request.user.role == 'residents':
         appointments = Appointment.objects.filter(customer=request.user)
     else:
         appointments = Appointment.objects.all()
@@ -90,7 +90,7 @@ def get_available_time_slots(request):
             {'time': '10:00', 'capacity': 8, 'waste_types': ['all']},
             {'time': '12:00', 'capacity': 6, 'waste_types': ['general', 'recyclable']},
             {'time': '14:00', 'capacity': 8, 'waste_types': ['all']},
-            {'time': '16:00', 'capacity': 5, 'waste_types': ['general', 'electronic', 'bulk']},
+            {'time': '16:00', 'capacity': 5, 'waste_types': ['general', 'bulk']},
         ]
         
         available_slots = []
@@ -126,7 +126,7 @@ def update_appointment_status(request, appointment_id):
         appointment = Appointment.objects.get(id=appointment_id)
         
         # Check permissions
-        if request.user.role == 'customer' and appointment.customer != request.user:
+        if request.user.role == 'residents' and appointment.customer != request.user:
             return JsonResponse({'error': 'Permission denied'}, status=403)
         
         data = json.loads(request.body)
@@ -218,10 +218,41 @@ def get_route_optimization(request):
         return JsonResponse({'error': 'Invalid date format'}, status=400)
 
 @login_required
+def get_appointment_details(request, appointment_id):
+    """Get detailed appointment information for calendar modal"""
+    try:
+        appointment = Appointment.objects.select_related('customer').get(id=appointment_id)
+        
+        # Check permissions
+        if request.user.role == 'residents' and appointment.customer != request.user:
+            return JsonResponse({'error': 'Permission denied'}, status=403)
+        
+        return JsonResponse({
+            'id': appointment.id,
+            'customer_name': appointment.customer.get_full_name() or appointment.customer.username,
+            'waste_type': appointment.waste_type,
+            'waste_type_display': appointment.get_waste_type_display(),
+            'status': appointment.status,
+            'status_display': appointment.get_status_display(),
+            'preferred_date': appointment.preferred_date.isoformat(),
+            'preferred_time': appointment.preferred_time.strftime('%H:%M'),
+            'address': appointment.address,
+            'priority': appointment.priority,
+            'priority_display': appointment.get_priority_display(),
+            'estimated_weight': float(appointment.estimated_weight) if appointment.estimated_weight else None,
+            'notes': appointment.notes,
+            'special_instructions': appointment.special_instructions,
+            'created_at': appointment.created_at.isoformat(),
+        })
+        
+    except Appointment.DoesNotExist:
+        return JsonResponse({'error': 'Appointment not found'}, status=404)
+
+@login_required
 def get_map_appointments(request):
     """Get appointments with location data for map display"""
     # Filter appointments based on user role
-    if request.user.role == 'customer':
+    if request.user.role == 'residents':
         appointments = Appointment.objects.filter(customer=request.user)
     else:
         appointments = Appointment.objects.all()

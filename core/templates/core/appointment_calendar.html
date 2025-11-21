@@ -52,7 +52,6 @@
                                 <option value="recyclable">Recyclable</option>
                                 <option value="organic">Organic</option>
                                 <option value="hazardous">Hazardous</option>
-                                <option value="electronic">Electronic</option>
                                 <option value="bulk">Bulk Items</option>
                             </select>
                         </div>
@@ -240,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function() {
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
-        events: {{ calendar_events|safe }},
+        events: {% if calendar_events %}{{ calendar_events|safe }}{% else %}[]{% endif %},
         eventClick: function(info) {
             showAppointmentDetails(info.event);
         },
@@ -266,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const statusFilter = document.getElementById('statusFilter').value;
         const wasteTypeFilter = document.getElementById('wasteTypeFilter').value;
         
-        const events = {{ calendar_events|safe }};
+        const events = {% if calendar_events %}{{ calendar_events|safe }}{% else %}[]{% endif %};
         let filteredEvents = events;
         
         if (statusFilter) {

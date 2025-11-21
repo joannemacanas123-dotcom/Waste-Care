@@ -223,3 +223,6 @@ LOGGING = {
 
 # Rate Limiting (for future implementation)
 RATELIMIT_ENABLE = True
+
+# MapTiler Configuration
+MAPTILER_API_KEY = os.environ.get('MAPTILER_API_KEY', 'get_your_own_OpIi9ZULNHzrESv6T2vL')
