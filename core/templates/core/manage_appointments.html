@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Manage Appointments</h2>
+<div class="card">
+  <div class="card-body">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Resident</th>
+          <th>Role</th>
+          <th>Address</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Assigned Staff</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for appt in appointments %}
+        <tr>
+          <td>#{{ appt.id }}</td>
+          <td>{{ appt.customer.username }}</td>
+          <td><span class="badge bg-info">{{ appt.customer.get_role_display }}</span></td>
+          <td>{{ appt.address|truncatechars:30 }}</td>
+          <td>{{ appt.preferred_date }}</td>
+          <td><span class="badge bg-secondary">{{ appt.get_status_display }}</span></td>
+          <td>
+            {% if appt.handled_by %}
+              <span class="badge bg-success">{{ appt.handled_by.username }}</span>
+            {% else %}
+              <span class="badge bg-warning">Unassigned</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="d-flex gap-1 flex-wrap">
+              <a href="{% url 'core:pickup_detail' appt.pk %}" class="btn btn-sm btn-primary">View</a>
+              <div class="dropdown">
+                <button class="btn btn-sm btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                  Update Status
+                </button>
+                <div class="dropdown-menu p-2" style="min-width: 200px;">
+                  <form method="post" action="{% url 'core:pickup_status_update' appt.pk %}" class="mb-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="pending">
+                    <button type="submit" class="btn btn-sm btn-secondary w-100">Set Pending</button>
+                  </form>
+                  <form method="post" action="{% url 'core:pickup_status_update' appt.pk %}" class="mb-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="approved">
+                    <button type="submit" class="btn btn-sm btn-success w-100">Set Approved</button>
+                  </form>
+                  <form method="post" action="{% url 'core:pickup_status_update' appt.pk %}" class="mb-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="in_progress">
+                    <button type="submit" class="btn btn-sm btn-info w-100">Set In Progress</button>
+                  </form>
+                  <form method="post" action="{% url 'core:pickup_status_update' appt.pk %}" class="mb-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="completed">
+                    <button type="submit" class="btn btn-sm btn-primary w-100">Set Completed</button>
+                  </form>
+                  <form method="post" action="{% url 'core:pickup_status_update' appt.pk %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="cancelled">
+                    <button type="submit" class="btn btn-sm btn-danger w-100">Set Cancelled</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<a href="{% url 'core:admin_panel' %}" class="btn btn-secondary mt-3">Back to Admin Panel</a>
+
+
+{% endblock %}

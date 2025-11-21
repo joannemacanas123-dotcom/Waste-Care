@@ -9,7 +9,7 @@ from .models import Appointment, User, Feedback, JournalEntry
 class AppointmentForm(forms.ModelForm):
     class Meta:
         model = Appointment
-        fields = ["waste_type", "address", "latitude", "longitude", "pickup_day", "preferred_date", "preferred_time", "priority", "estimated_weight", "notes", "special_instructions"]
+        fields = ["waste_type", "address", "latitude", "longitude", "pickup_day", "preferred_date", "preferred_time", "priority", "notes", "special_instructions"]
         widgets = {
             'waste_type': forms.Select(attrs={
                 'class': 'form-select',
@@ -54,12 +54,7 @@ class AppointmentForm(forms.ModelForm):
                 'class': 'form-select',
                 'placeholder': ' '
             }),
-            'estimated_weight': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'placeholder': ' ',
-                'min': '0',
-                'step': '0.1'
-            }),
+
             'notes': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 3,
@@ -80,7 +75,7 @@ class AppointmentForm(forms.ModelForm):
             'preferred_date': 'Preferred Date',
             'preferred_time': 'Preferred Time',
             'priority': 'Priority Level',
-            'estimated_weight': 'Estimated Weight (kg)',
+
             'notes': 'Additional Notes',
             'special_instructions': 'Special Instructions'
         }

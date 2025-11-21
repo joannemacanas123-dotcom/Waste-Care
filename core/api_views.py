@@ -81,7 +81,7 @@ def get_available_time_slots(request):
         # Get existing appointments for the date
         existing_appointments = Appointment.objects.filter(
             preferred_date=date,
-            status__in=['scheduled', 'in_progress']
+            status__in=['approved', 'in_progress']
         ).values_list('preferred_time', flat=True)
         
         # Define time slots with capacity
@@ -180,7 +180,7 @@ def get_route_optimization(request):
         # Get appointments for the date
         appointments = Appointment.objects.filter(
             preferred_date=date,
-            status__in=['scheduled', 'in_progress']
+            status__in=['approved', 'in_progress']
         ).select_related('customer')
         
         if request.user.role == 'driver':
@@ -304,3 +304,28 @@ def get_map_appointments(request):
         'appointments': map_data,
         'total': len(map_data)
     })
+
+@login_required
+def get_admin_stats(request):
+    """Get admin dashboard statistics"""
+    if request.user.role not in ['admin', 'staff'] and not request.user.is_superuser:
+        return JsonResponse({'error': 'Permission denied'}, status=403)
+    
+    from django.db.models import Count, Avg
+    from datetime import timedelta
+    
+    today = timezone.now().date()
+    week_ago = today - timedelta(days=7)
+    
+    stats = {
+        'total_users': User.objects.count(),
+        'active_users': User.objects.filter(is_active=True).count(),
+        'total_appointments': Appointment.objects.count(),
+        'pending_appointments': Appointment.objects.filter(status__in=['pending', 'approved']).count(),
+        'completed_appointments': Appointment.objects.filter(status='completed').count(),
+        'weekly_appointments': Appointment.objects.filter(preferred_date__gte=week_ago).count(),
+        'status_breakdown': list(Appointment.objects.values('status').annotate(count=Count('id'))),
+        'waste_type_breakdown': list(Appointment.objects.values('waste_type').annotate(count=Count('id'))),
+    }
+    
+    return JsonResponse(stats)

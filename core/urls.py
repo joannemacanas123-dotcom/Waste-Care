@@ -41,6 +41,20 @@ urlpatterns = [
     path("settings/", views.settings_view, name="settings"),
     path("tutorial/", views.tutorial_view, name="tutorial"),
     
+    # Admin Management
+    path("admin-panel/", views.admin_panel, name="admin_panel"),
+    path("admin-panel/users/", views.manage_users, name="manage_users"),
+    path("admin-panel/appointments/", views.manage_appointments, name="manage_appointments"),
+    path("admin-panel/services/", views.manage_services, name="manage_services"),
+    path("admin-panel/feedback/", views.manage_feedback, name="manage_feedback"),
+    path("admin-panel/routes/", views.monitor_routes, name="monitor_routes"),
+    path("admin-panel/reports/", views.system_reports, name="system_reports"),
+    
+    # Staff Features
+    path("staff/assigned-pickups/", views.staff_assigned_pickups, name="staff_assigned_pickups"),
+    path("staff/schedule/", views.staff_schedule, name="staff_schedule"),
+    path("staff/assignments/", views.staff_assignments, name="staff_assignments"),
+    
     # API Endpoints
     path("api/notifications/<int:notification_id>/read/", api_views.mark_notification_read, name="api_mark_notification_read"),
     path("api/notifications/mark-all-read/", api_views.mark_all_notifications_read, name="api_mark_all_notifications_read"),
@@ -51,6 +65,7 @@ urlpatterns = [
     path("api/appointments/<int:appointment_id>/update-status/", api_views.update_appointment_status, name="api_update_appointment_status"),
     path("api/route-optimization/", api_views.get_route_optimization, name="api_route_optimization"),
     path("api/map-appointments/", api_views.get_map_appointments, name="api_map_appointments"),
+    path("api/admin/stats/", api_views.get_admin_stats, name="api_admin_stats"),
 ]
 
 

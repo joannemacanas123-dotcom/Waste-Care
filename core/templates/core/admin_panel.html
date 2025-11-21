@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+  <h2 class="mb-4">Admin Panel</h2>
+  
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="card text-white bg-primary">
+        <div class="card-body">
+          <h5>Total Users</h5>
+          <h2>{{ total_users }}</h2>
+          <small>{{ active_users }} active</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-warning">
+        <div class="card-body">
+          <h5>Pending Requests</h5>
+          <h2>{{ pending_appointments }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-success">
+        <div class="card-body">
+          <h5>Completed</h5>
+          <h2>{{ completed_appointments }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-info">
+        <div class="card-body">
+          <h5>Total Feedback</h5>
+          <h2>{{ total_feedback }}</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row">
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <h5><i class="fas fa-users"></i> Manage Users</h5>
+          <p>View and manage user accounts</p>
+          <a href="{% url 'core:manage_users' %}" class="btn btn-primary">Go to Users</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <h5><i class="fas fa-calendar"></i> Manage Appointments</h5>
+          <p>View and manage pickup requests</p>
+          <a href="{% url 'core:manage_appointments' %}" class="btn btn-primary">Go to Appointments</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <h5><i class="fas fa-truck"></i> Manage Services</h5>
+          <p>View completed waste services</p>
+          <a href="{% url 'core:manage_services' %}" class="btn btn-primary">Go to Services</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <h5><i class="fas fa-comments"></i> Manage Feedback</h5>
+          <p>View resident feedback</p>
+          <a href="{% url 'core:manage_feedback' %}" class="btn btn-primary">Go to Feedback</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <h5><i class="fas fa-route"></i> Monitor Routes</h5>
+          <p>View pickup routes on map</p>
+          <a href="{% url 'core:monitor_routes' %}" class="btn btn-primary">Go to Routes</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <h5><i class="fas fa-chart-bar"></i> System Reports</h5>
+          <p>View statistics and reports</p>
+          <a href="{% url 'core:system_reports' %}" class="btn btn-primary">Go to Reports</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

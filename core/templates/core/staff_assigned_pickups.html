@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2><i class="fas fa-tasks me-2"></i>My Assigned Pickups</h2>
+
+<div class="card">
+  <div class="card-body">
+    {% if appointments %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Resident</th>
+          <th>Address</th>
+          <th>Date & Time</th>
+          <th>Waste Type</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for appt in appointments %}
+        <tr>
+          <td>#{{ appt.id }}</td>
+          <td>{{ appt.customer.username }}</td>
+          <td>{{ appt.address|truncatechars:30 }}</td>
+          <td>{{ appt.preferred_date }} {{ appt.preferred_time }}</td>
+          <td><span class="badge bg-info">{{ appt.get_waste_type_display }}</span></td>
+          <td><span class="badge bg-secondary">{{ appt.get_status_display }}</span></td>
+          <td>
+            <div class="d-flex gap-1">
+              <a href="{% url 'core:pickup_detail' appt.pk %}" class="btn btn-sm btn-primary">View Details</a>
+              {% if appt.status == 'approved' %}
+              <form method="post" action="{% url 'core:pickup_status_update' appt.pk %}" class="d-inline">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="in_progress">
+                <button type="submit" class="btn btn-sm btn-warning">Start Pickup</button>
+              </form>
+              {% elif appt.status == 'in_progress' %}
+              <form method="post" action="{% url 'core:pickup_status_update' appt.pk %}" class="d-inline">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="completed">
+                <button type="submit" class="btn btn-sm btn-success">Mark Complete</button>
+              </form>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="alert alert-info">
+      <i class="fas fa-info-circle me-2"></i>No pickup assignments at the moment.
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

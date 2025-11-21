@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Manage Waste Services</h2>
+<div class="card">
+  <div class="card-body">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Appointment</th>
+          <th>Customer</th>
+          <th>Address</th>
+          <th>Completed At</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for service in services %}
+        <tr>
+          <td>#{{ service.appointment.id }}</td>
+          <td>{{ service.appointment.customer.username }}</td>
+          <td>{{ service.appointment.address|truncatechars:30 }}</td>
+          <td>{{ service.completed_at|date:"M d, Y g:i A" }}</td>
+          <td>{{ service.staff_notes|truncatechars:50 }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<a href="{% url 'core:admin_panel' %}" class="btn btn-secondary mt-3">Back to Admin Panel</a>
+{% endblock %}

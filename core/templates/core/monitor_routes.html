@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+{% endblock %}
+
+{% block content %}
+<h2>Monitor Routes</h2>
+<div class="card mb-3">
+  <div class="card-body">
+    <div id="map" style="height: 500px;"></div>
+  </div>
+</div>
+<a href="{% url 'core:admin_panel' %}" class="btn btn-secondary">Back to Admin Panel</a>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  var almeriaBounds = L.latLngBounds(L.latLng(11.5800, 124.3200), L.latLng(11.7100, 124.4700));
+  var map = L.map('map', {maxBounds: almeriaBounds, maxBoundsViscosity: 1.0, minZoom: 13}).setView([11.645, 124.395], 14);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '© OpenStreetMap'}).addTo(map);
+  
+  {% for appt in appointments %}
+  {% if appt.latitude and appt.longitude %}
+  L.marker([{{ appt.latitude }}, {{ appt.longitude }}])
+    .addTo(map)
+    .bindPopup('<b>{{ appt.customer.username }}</b><br>{{ appt.address }}<br>Status: {{ appt.get_status_display }}');
+  {% endif %}
+  {% endfor %}
+</script>
+{% endblock %}

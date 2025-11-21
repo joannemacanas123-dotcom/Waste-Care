@@ -1,22 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Service History</h2>
+<h2>Appointment History</h2>
 <div class="card p-3">
   <table class="table">
-    <thead><tr><th>Completed At</th><th>Address</th><th>Notes</th></tr></thead>
+    <thead><tr><th>Date</th><th>Action</th><th>Appointment</th><th>Changed By</th><th>Changes</th><th>Actions</th></tr></thead>
     <tbody>
       {% for h in history %}
         <tr>
-          <td>{{ h.completed_at }}</td>
-          <td>{{ h.appointment.address }}</td>
-          <td>{{ h.staff_notes|default:'—' }}</td>
+          <td>{{ h.timestamp|date:"M d, Y g:i A" }}</td>
+          <td><span class="badge bg-info">{{ h.action }}</span></td>
+          <td>{{ h.appointment.address|truncatechars:30 }}</td>
+          <td>{{ h.changed_by.username|default:'—' }}</td>
+          <td><small>{{ h.changes|linebreaksbr }}</small></td>
+          <td><a href="{% url 'core:pickup_detail' h.appointment.pk %}" class="btn btn-sm btn-outline-primary">View</a></td>
         </tr>
       {% empty %}
-        <tr><td colspan="3">No completed services yet.</td></tr>
+        <tr><td colspan="6">No history records yet.</td></tr>
       {% endfor %}
     </tbody>
   </table>
-  </div>
+</div>
 {% endblock %}
 
 

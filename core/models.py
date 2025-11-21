@@ -27,8 +27,8 @@ class SubscriptionPlan(models.Model):
 
 class Appointment(models.Model):
     STATUS_CHOICES = [
-        ("requested", "Requested"),
-        ("scheduled", "Scheduled"),
+        ("pending", "Pending"),
+        ("approved", "Approved"),
         ("in_progress", "In Progress"),
         ("completed", "Completed"),
         ("cancelled", "Cancelled"),
@@ -71,7 +71,7 @@ class Appointment(models.Model):
     priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default="normal")
     notes = models.TextField(blank=True)
     special_instructions = models.TextField(blank=True, help_text="Special handling requirements")
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="requested")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     handled_by = models.ForeignKey(
@@ -99,6 +99,20 @@ class ServiceHistory(models.Model):
 
     def __str__(self):
         return f"History for {self.appointment_id}"
+
+
+class AppointmentHistory(models.Model):
+    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE, related_name="history_logs")
+    changed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    action = models.CharField(max_length=50)
+    changes = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-timestamp']
+    
+    def __str__(self):
+        return f"{self.appointment_id} - {self.action} at {self.timestamp}"
 
 
 class Article(models.Model):

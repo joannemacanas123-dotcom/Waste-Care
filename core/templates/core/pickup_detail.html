@@ -15,13 +15,43 @@
         <dt class="col-sm-4">Time</dt><dd class="col-sm-8">{{ appointment.preferred_time }}</dd>
         <dt class="col-sm-4">Address</dt><dd class="col-sm-8">{{ appointment.address }}</dd>
         <dt class="col-sm-4">Status</dt><dd class="col-sm-8"><span class="badge bg-secondary">{{ appointment.status }}</span></dd>
+        <dt class="col-sm-4">Waste Type</dt><dd class="col-sm-8">{{ appointment.get_waste_type_display }}</dd>
+        <dt class="col-sm-4">Priority</dt><dd class="col-sm-8">{{ appointment.get_priority_display }}</dd>
+        {% if appointment.estimated_weight %}
+        <dt class="col-sm-4">Est. Weight</dt><dd class="col-sm-8">{{ appointment.estimated_weight }} kg</dd>
+        {% endif %}
         <dt class="col-sm-4">Notes</dt><dd class="col-sm-8">{{ appointment.notes|default:'—' }}</dd>
+        {% if appointment.special_instructions %}
+        <dt class="col-sm-4">Special Instructions</dt><dd class="col-sm-8">{{ appointment.special_instructions }}</dd>
+        {% endif %}
+        {% if user.role == 'staff' or user.role == 'admin' %}
+        <dt class="col-sm-4">Resident Contact</dt><dd class="col-sm-8">{{ appointment.customer.email|default:'No email' }}</dd>
+        {% endif %}
       </dl>
-      <div class="d-flex gap-2">
+      <div class="d-flex gap-2 flex-wrap">
+        {% if user.role == 'staff' and appointment.handled_by == user %}
+          {% if appointment.status == 'approved' %}
+          <form method="post" action="{% url 'core:pickup_status_update' appointment.pk %}" class="d-inline">
+            {% csrf_token %}
+            <input type="hidden" name="status" value="in_progress">
+            <button type="submit" class="btn btn-warning">Start Pickup</button>
+          </form>
+          {% elif appointment.status == 'in_progress' %}
+          <form method="post" action="{% url 'core:pickup_status_update' appointment.pk %}" class="d-inline">
+            {% csrf_token %}
+            <input type="hidden" name="status" value="completed">
+            <button type="submit" class="btn btn-success">Mark Complete</button>
+          </form>
+          {% endif %}
+        {% endif %}
+        
+        {% if user.role == 'admin' or appointment.customer == user %}
         <a class="btn btn-outline-secondary" href="{% url 'core:pickup_update' appointment.pk %}">Edit</a>
         <form method="post" action="{% url 'core:pickup_delete' appointment.pk %}">{% csrf_token %}
           <button class="btn btn-outline-danger">Delete</button>
         </form>
+        {% endif %}
+        
         <a class="btn btn-outline-primary" href="{% url 'core:pickup_list' %}">Back</a>
       </div>
     </div>
@@ -31,7 +61,7 @@
     <div class="card p-4">
       <h3 class="mb-3">Pickup Location</h3>
       {% if appointment.latitude and appointment.longitude %}
-        <div id="map" style="height: 300px; border-radius: 8px;"></div>
+        <div id="map" style="height: 350px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);"></div>
       {% else %}
         <div class="alert alert-info">
           <i class="fas fa-info-circle"></i> Location coordinates not available for this appointment.
@@ -55,15 +85,33 @@
     // noinspection JSUnusedAssignment
     var address = '{{ appointment.address|escapejs }}';
     
-    var map = L.map('map').setView([lat, lng], 15);
+    var almeriaBounds = L.latLngBounds(
+      L.latLng(11.5800, 124.3200),
+      L.latLng(11.7100, 124.4700)
+    );
+    
+    var map = L.map('map', {
+      maxBounds: almeriaBounds,
+      maxBoundsViscosity: 1.0,
+      minZoom: 13
+    }).setView([lat, lng], 15);
     
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
     
-    L.marker([lat, lng])
+    // Create custom marker
+    var customIcon = L.divIcon({
+      className: 'custom-marker',
+      html: '<div style="background-color: #4A90E2; width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>',
+      iconSize: [30, 30],
+      iconAnchor: [15, 15],
+      popupAnchor: [0, -15]
+    });
+    
+    L.marker([lat, lng], { icon: customIcon })
       .addTo(map)
-      .bindPopup('<strong>Pickup Location</strong><br>' + address)
+      .bindPopup('<div style="padding: 0.5rem;"><strong style="color: #4A90E2; font-size: 1.1rem;">📍 Pickup Location</strong><br><span style="margin-top: 0.5rem; display: block;">' + address + '</span></div>')
       .openPopup();
   });
 </script>

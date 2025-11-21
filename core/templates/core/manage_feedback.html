@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Manage Feedback</h2>
+<div class="card">
+  <div class="card-body">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Customer</th>
+          <th>Message</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for feedback in feedbacks %}
+        <tr>
+          <td>{{ feedback.customer.username }}</td>
+          <td>{{ feedback.message }}</td>
+          <td>{{ feedback.created_at|date:"M d, Y g:i A" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<a href="{% url 'core:admin_panel' %}" class="btn btn-secondary mt-3">Back to Admin Panel</a>
+{% endblock %}

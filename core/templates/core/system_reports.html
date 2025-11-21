@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>System Reports & Statistics</h2>
+
+<div class="row mb-4">
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-body">
+        <h5>Daily Appointments</h5>
+        <h2>{{ daily_appointments }}</h2>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-body">
+        <h5>Weekly Appointments</h5>
+        <h2>{{ weekly_appointments }}</h2>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-body">
+        <h5>Monthly Appointments</h5>
+        <h2>{{ monthly_appointments }}</h2>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">Status Breakdown</div>
+      <div class="card-body">
+        <table class="table table-sm">
+          {% for item in status_breakdown %}
+          <tr>
+            <td>{{ item.status }}</td>
+            <td>{{ item.count }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">Waste Type Breakdown</div>
+      <div class="card-body">
+        <table class="table table-sm">
+          {% for item in waste_type_breakdown %}
+          <tr>
+            <td>{{ item.waste_type }}</td>
+            <td>{{ item.count }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">Priority Breakdown</div>
+      <div class="card-body">
+        <table class="table table-sm">
+          {% for item in priority_breakdown %}
+          <tr>
+            <td>{{ item.priority }}</td>
+            <td>{{ item.count }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a href="{% url 'core:admin_panel' %}" class="btn btn-secondary mt-3">Back to Admin Panel</a>
+{% endblock %}
