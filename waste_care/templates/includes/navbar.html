@@ -25,7 +25,13 @@
             <i class="fas fa-home me-2"></i>Home
           </a>
         </li>
-        <li class="nav-item dropdown">
+        <!-- Dashboard - Mobile direct link, Desktop dropdown -->
+        <li class="nav-item d-lg-none">
+          <a class="nav-link {% if 'dashboard' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'core:dashboard' %}">
+            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+          </a>
+        </li>
+        <li class="nav-item dropdown d-none d-lg-block">
           <a class="nav-link dropdown-toggle {% if 'dashboard' in request.resolver_match.url_name %}active{% endif %}" href="#" id="dashboardDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="fas fa-tachometer-alt me-2"></i>Dashboard
           </a>
@@ -39,7 +45,13 @@
           </ul>
         </li>
         
-        <li class="nav-item dropdown">
+        <!-- Appointments - Mobile direct link, Desktop dropdown -->
+        <li class="nav-item d-lg-none">
+          <a class="nav-link {% if 'pickup' in request.resolver_match.url_name or 'appointment' in request.resolver_match.url_name or 'scheduling' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'core:pickup_list' %}">
+            <i class="fas fa-truck me-2"></i>Appointments
+          </a>
+        </li>
+        <li class="nav-item dropdown d-none d-lg-block">
           <a class="nav-link dropdown-toggle {% if 'pickup' in request.resolver_match.url_name or 'appointment' in request.resolver_match.url_name or 'scheduling' in request.resolver_match.url_name %}active{% endif %}" href="#" id="appointmentsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="fas fa-truck me-2"></i>Appointments
           </a>
@@ -109,6 +121,18 @@
             <i class="fas fa-book-open me-2"></i>Tutorial
           </a>
         </li>
+        
+        <!-- Mobile-only logout button -->
+        {% if user.is_authenticated %}
+        <li class="nav-item d-lg-none">
+          <form method="post" action="{% url 'core:logout' %}" class="d-inline">
+            {% csrf_token %}
+            <button class="nav-link btn btn-link text-danger border-0 w-100 text-start" type="submit">
+              <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </button>
+          </form>
+        </li>
+        {% endif %}
       </ul>
       
       <ul class="navbar-nav">
@@ -134,12 +158,9 @@
               {% endif %}
               <li><hr class="dropdown-divider"></li>
               <li>
-                <form method="post" action="{% url 'core:logout' %}" class="d-inline w-100">
-                  {% csrf_token %}
-                  <button class="dropdown-item text-danger py-2" type="submit">
-                    <i class="fas fa-sign-out-alt me-2"></i>Logout
-                  </button>
-                </form>
+                <button class="dropdown-item text-danger py-2 border-0 bg-transparent w-100 text-start" onclick="document.getElementById('logoutForm').submit();">
+                  <i class="fas fa-sign-out-alt me-2"></i>Logout
+                </button>
               </li>
             </ul>
           </li>
@@ -159,3 +180,10 @@
     </div>
   </div>
 </nav>
+
+<!-- Hidden logout form for desktop dropdown -->
+{% if user.is_authenticated %}
+<form id="logoutForm" method="post" action="{% url 'core:logout' %}" style="display: none;">
+  {% csrf_token %}
+</form>
+{% endif %}
