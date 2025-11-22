@@ -1,6 +1,6 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
-from . import views, advanced_views, api_views
+from . import views, api_views
 
 app_name = 'core'
 
@@ -8,7 +8,6 @@ urlpatterns = [
     # Homepage and Dashboard
     path("", views.home, name="home"),
     path("dashboard/", views.dashboard, name="dashboard"),
-    path("advanced-dashboard/", advanced_views.advanced_dashboard, name="advanced_dashboard"),
     
     # Authentication
     path("login/", auth_views.LoginView.as_view(template_name="core/login.html", redirect_authenticated_user=True), name="login"),
@@ -23,12 +22,6 @@ urlpatterns = [
     path("appointments/<int:pk>/delete/", views.pickup_delete, name="pickup_delete"),
     path("appointments/<int:pk>/status/", views.pickup_status_update, name="pickup_status_update"),
     
-    # Advanced Features
-    path("smart-scheduling/", advanced_views.smart_scheduling, name="smart_scheduling"),
-    path("appointment-calendar/", advanced_views.appointment_calendar, name="appointment_calendar"),
-    path("appointment-search/", advanced_views.appointment_search, name="appointment_search"),
-    path("pickup-map/", advanced_views.pickup_map, name="pickup_map"),
-
     # Service history
     path("history/", views.history_view, name="history"),
 

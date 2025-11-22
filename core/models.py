@@ -142,16 +142,73 @@ class Feedback(models.Model):
 
 
 class Notification(models.Model):
+    NOTIFICATION_TYPES = [
+        ('confirmation', 'Pickup Confirmation'),
+        ('approval', 'Appointment Approval'),
+        ('cancellation', 'Cancellation'),
+        ('reminder', 'Reminder'),
+        ('announcement', 'Admin Announcement'),
+        ('update', 'General Update'),
+    ]
+    
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
     message = models.CharField(max_length=255)
+    notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES, default='update')
+    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE, null=True, blank=True, related_name="notifications")
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
+    
+    class Meta:
+        ordering = ['-created_at']
 
     @staticmethod
     def notify_pickup_completed(appointment: Appointment):
         Notification.objects.create(
             user=appointment.customer,
-            message=f"Your trash was picked up on {timezone.now().strftime('%Y-%m-%d %H:%M')}.",
+            message=f"Your pickup was completed on {timezone.now().strftime('%b %d, %Y at %I:%M %p')}. Waste type: {appointment.get_waste_type_display()}.",
+            notification_type='confirmation',
+            appointment=appointment
         )
+    
+    @staticmethod
+    def notify_appointment_approved(appointment: Appointment):
+        Notification.objects.create(
+            user=appointment.customer,
+            message=f"Your appointment for {appointment.preferred_date.strftime('%b %d, %Y')} at {appointment.preferred_time.strftime('%I:%M %p')} has been approved. Waste type: {appointment.get_waste_type_display()}.",
+            notification_type='approval',
+            appointment=appointment
+        )
+    
+    @staticmethod
+    def notify_appointment_cancelled(appointment: Appointment, reason=''):
+        msg = f"Your appointment for {appointment.preferred_date.strftime('%b %d, %Y')} has been cancelled."
+        if reason:
+            msg += f" Reason: {reason}"
+        Notification.objects.create(
+            user=appointment.customer,
+            message=msg,
+            notification_type='cancellation',
+            appointment=appointment
+        )
+    
+    @staticmethod
+    def notify_pickup_reminder(appointment: Appointment):
+        Notification.objects.create(
+            user=appointment.customer,
+            message=f"Reminder: Your scheduled pickup is tomorrow ({appointment.preferred_date.strftime('%b %d, %Y')}) at {appointment.preferred_time.strftime('%I:%M %p')}. Waste type: {appointment.get_waste_type_display()}.",
+            notification_type='reminder',
+            appointment=appointment
+        )
+    
+    @staticmethod
+    def create_announcement(message: str, users=None):
+        if users is None:
+            users = User.objects.filter(role='residents')
+        for user in users:
+            Notification.objects.create(
+                user=user,
+                message=f"Admin announcement: {message}",
+                notification_type='announcement'
+            )
 
 # Create your models here.

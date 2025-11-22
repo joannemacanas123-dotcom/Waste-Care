@@ -428,12 +428,10 @@ def pickup_status_update(request, pk):
 @login_required
 def history_view(request):
     if is_staff_like(request.user):
-        qs = AppointmentHistory.objects.select_related("appointment", "changed_by").order_by("-timestamp")
+        appointments = Appointment.objects.select_related("customer", "handled_by").order_by("-preferred_date", "-preferred_time")
     else:
-        qs = AppointmentHistory.objects.select_related("appointment", "changed_by").filter(
-            appointment__customer=request.user
-        ).order_by("-timestamp")
-    return render(request, "core/history.html", {"history": qs})
+        appointments = Appointment.objects.filter(customer=request.user).order_by("-preferred_date", "-preferred_time")
+    return render(request, "core/history.html", {"appointments": appointments})
 
 
 @login_required
