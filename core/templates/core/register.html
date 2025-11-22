@@ -171,6 +171,33 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
+.password-toggle {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.password-toggle:hover {
+    color: #495057;
+}
+
+.form-floating input[type="password"],
+.form-floating input[type="text"] {
+    color: #000 !important;
+    -webkit-text-fill-color: #000 !important;
+}
+
+.form-floating input[type="text"] {
+    -webkit-text-security: none !important;
+    font-family: inherit !important;
+}
+
 @media (max-width: 768px) {
     .register-section {
         padding: 1rem 0.5rem;
@@ -230,21 +257,34 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
+    // Remove admin role from dropdown
+    const roleSelect = document.querySelector('select[name="role"]');
+    if (roleSelect) {
+        const adminOption = roleSelect.querySelector('option[value="admin"]');
+        if (adminOption) {
+            adminOption.remove();
+        }
+    }
 });
 
-// Password toggle functionality
+// Password toggle function
 function togglePassword(fieldId) {
     const passwordField = document.getElementById(fieldId);
     const toggleIcon = fieldId.includes('password1') ? document.getElementById('toggleIcon1') : document.getElementById('toggleIcon2');
     
-    if (passwordField.type === 'password') {
-        passwordField.type = 'text';
-        toggleIcon.classList.remove('fa-eye');
-        toggleIcon.classList.add('fa-eye-slash');
-    } else {
-        passwordField.type = 'password';
-        toggleIcon.classList.remove('fa-eye-slash');
-        toggleIcon.classList.add('fa-eye');
+    if (passwordField && toggleIcon) {
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            passwordField.setAttribute('type', 'text');
+            toggleIcon.classList.remove('fa-eye');
+            toggleIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordField.type = 'password';
+            passwordField.setAttribute('type', 'password');
+            toggleIcon.classList.remove('fa-eye-slash');
+            toggleIcon.classList.add('fa-eye');
+        }
     }
 }
 </script>

@@ -18,7 +18,7 @@
         <dt class="col-sm-4">Waste Type</dt><dd class="col-sm-8">{{ appointment.get_waste_type_display }}</dd>
         <dt class="col-sm-4">Priority</dt><dd class="col-sm-8">{{ appointment.get_priority_display }}</dd>
         {% if appointment.estimated_weight %}
-        <dt class="col-sm-4">Est. Weight</dt><dd class="col-sm-8">{{ appointment.estimated_weight }} kg</dd>
+         <dt class="col-sm-4">Est. Weight</dt><dd class="col-sm-8">{{ appointment.estimated_weight }} kg</dd>
         {% endif %}
         <dt class="col-sm-4">Notes</dt><dd class="col-sm-8">{{ appointment.notes|default:'—' }}</dd>
         {% if appointment.special_instructions %}
