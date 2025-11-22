@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}Waste Segregation Guide - Waste Care{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <!-- Header -->
+      <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold mb-3">
+          <i class="fas fa-recycle text-success me-3"></i>
+          How to Segregate and Recycle Your Trash Properly
+        </h1>
+        <p class="lead text-muted">A comprehensive guide to proper waste management at home</p>
+      </div>
+
+      <!-- Introduction -->
+      <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-body p-4">
+          <h3 class="text-primary mb-3">Why Proper Waste Segregation Matters</h3>
+          <p class="mb-3">Proper waste segregation is the first step towards effective waste management and environmental protection. By separating your waste correctly, you help:</p>
+          <ul class="list-unstyled">
+            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Reduce landfill waste</li>
+            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Increase recycling efficiency</li>
+            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Protect the environment</li>
+            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Save natural resources</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Waste Categories -->
+      <h3 class="text-center mb-4">Types of Waste and How to Handle Them</h3>
+
+      <!-- Biodegradable/Organic Waste -->
+      <div class="card mb-4 border-start border-success border-4">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center mb-3">
+            <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+              <i class="fas fa-leaf fa-2x text-success"></i>
+            </div>
+            <div>
+              <h4 class="mb-1">Biodegradable/Organic Waste</h4>
+              <span class="badge bg-success">Green Bin</span>
+            </div>
+          </div>
+          <p class="mb-3"><strong>What goes here:</strong></p>
+          <ul class="mb-3">
+            <li>Food scraps and leftovers</li>
+            <li>Fruit and vegetable peels</li>
+            <li>Coffee grounds and tea bags</li>
+            <li>Eggshells</li>
+            <li>Garden waste (leaves, grass clippings)</li>
+            <li>Paper napkins and tissues</li>
+          </ul>
+          <div class="alert alert-success mb-0">
+            <strong><i class="fas fa-lightbulb me-2"></i>Tip:</strong> Consider composting organic waste to create nutrient-rich soil for your garden!
+          </div>
+        </div>
+      </div>
+
+      <!-- Recyclable Waste -->
+      <div class="card mb-4 border-start border-primary border-4">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center mb-3">
+            <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+              <i class="fas fa-recycle fa-2x text-primary"></i>
+            </div>
+            <div>
+              <h4 class="mb-1">Recyclable Waste</h4>
+              <span class="badge bg-primary">Blue Bin</span>
+            </div>
+          </div>
+          <p class="mb-3"><strong>What goes here:</strong></p>
+          <div class="row">
+            <div class="col-md-6">
+              <h6 class="text-primary">Paper & Cardboard:</h6>
+              <ul class="mb-3">
+                <li>Newspapers and magazines</li>
+                <li>Office paper</li>
+                <li>Cardboard boxes</li>
+                <li>Paper bags</li>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <h6 class="text-primary">Plastic:</h6>
+              <ul class="mb-3">
+                <li>Plastic bottles (PET)</li>
+                <li>Plastic containers</li>
+                <li>Plastic bags (clean)</li>
+                <li>Plastic packaging</li>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <h6 class="text-primary">Metal:</h6>
+              <ul class="mb-3">
+                <li>Aluminum cans</li>
+                <li>Tin cans</li>
+                <li>Metal lids</li>
+                <li>Aluminum foil</li>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <h6 class="text-primary">Glass:</h6>
+              <ul class="mb-3">
+                <li>Glass bottles</li>
+                <li>Glass jars</li>
+                <li>Glass containers</li>
+              </ul>
+            </div>
+          </div>
+          <div class="alert alert-primary mb-0">
+            <strong><i class="fas fa-lightbulb me-2"></i>Tip:</strong> Rinse containers before recycling to prevent contamination!
+          </div>
+        </div>
+      </div>
+
+      <!-- Residual/Non-Recyclable Waste -->
+      <div class="card mb-4 border-start border-secondary border-4">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center mb-3">
+            <div class="rounded-circle bg-secondary bg-opacity-10 p-3 me-3">
+              <i class="fas fa-trash fa-2x text-secondary"></i>
+            </div>
+            <div>
+              <h4 class="mb-1">Residual/Non-Recyclable Waste</h4>
+              <span class="badge bg-secondary">Black Bin</span>
+            </div>
+          </div>
+          <p class="mb-3"><strong>What goes here:</strong></p>
+          <ul class="mb-3">
+            <li>Dirty or contaminated materials</li>
+            <li>Styrofoam</li>
+            <li>Broken ceramics</li>
+            <li>Diapers and sanitary products</li>
+            <li>Cigarette butts</li>
+            <li>Mixed material items (hard to separate)</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Hazardous Waste -->
+      <div class="card mb-4 border-start border-danger border-4">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center mb-3">
+            <div class="rounded-circle bg-danger bg-opacity-10 p-3 me-3">
+              <i class="fas fa-exclamation-triangle fa-2x text-danger"></i>
+            </div>
+            <div>
+              <h4 class="mb-1">Hazardous Waste</h4>
+              <span class="badge bg-danger">Special Handling Required</span>
+            </div>
+          </div>
+          <p class="mb-3"><strong>What goes here:</strong></p>
+          <ul class="mb-3">
+            <li>Batteries</li>
+            <li>Electronics (e-waste)</li>
+            <li>Light bulbs and fluorescent tubes</li>
+            <li>Paint and chemicals</li>
+            <li>Medical waste</li>
+            <li>Motor oil</li>
+          </ul>
+          <div class="alert alert-danger mb-0">
+            <strong><i class="fas fa-exclamation-circle me-2"></i>Important:</strong> Never mix hazardous waste with regular trash. Schedule a special pickup for proper disposal!
+          </div>
+        </div>
+      </div>
+
+      <!-- Best Practices -->
+      <div class="card mb-4 border-0 shadow-sm bg-light">
+        <div class="card-body p-4">
+          <h3 class="text-primary mb-4">
+            <i class="fas fa-star me-2"></i>Best Practices for Waste Segregation
+          </h3>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <div class="d-flex">
+                <div class="me-3">
+                  <i class="fas fa-check-circle fa-2x text-success"></i>
+                </div>
+                <div>
+                  <h6>Clean Before Recycling</h6>
+                  <p class="text-muted mb-0">Rinse food containers to prevent contamination</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <div class="d-flex">
+                <div class="me-3">
+                  <i class="fas fa-check-circle fa-2x text-success"></i>
+                </div>
+                <div>
+                  <h6>Flatten Cardboard</h6>
+                  <p class="text-muted mb-0">Save space by flattening boxes</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <div class="d-flex">
+                <div class="me-3">
+                  <i class="fas fa-check-circle fa-2x text-success"></i>
+                </div>
+                <div>
+                  <h6>Remove Labels When Possible</h6>
+                  <p class="text-muted mb-0">Helps improve recycling quality</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <div class="d-flex">
+                <div class="me-3">
+                  <i class="fas fa-check-circle fa-2x text-success"></i>
+                </div>
+                <div>
+                  <h6>Keep Bins Covered</h6>
+                  <p class="text-muted mb-0">Prevent pests and odors</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Call to Action -->
+      <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);">
+        <div class="card-body p-5 text-white text-center">
+          <h3 class="mb-3">Ready to Make a Difference?</h3>
+          <p class="mb-4">Start segregating your waste properly today and contribute to a cleaner, greener environment!</p>
+          <a href="{% url 'core:pickup_create' %}" class="btn btn-light btn-lg">
+            <i class="fas fa-calendar-plus me-2"></i>Schedule a Pickup
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

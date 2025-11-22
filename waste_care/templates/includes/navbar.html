@@ -121,6 +121,14 @@
         </li>
         {% endif %}
         
+        {% if user.role == 'residents' %}
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'education' %}active{% endif %}" href="{% url 'core:education' %}">
+            <i class="fas fa-graduation-cap me-2"></i>Waste Guide
+          </a>
+        </li>
+        {% endif %}
+        
         <li class="nav-item">
           <a class="nav-link {% if request.resolver_match.url_name == 'tutorial' %}active{% endif %}" href="{% url 'core:tutorial' %}">
             <i class="fas fa-book-open me-2"></i>Tutorial

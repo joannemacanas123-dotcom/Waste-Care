@@ -40,6 +40,7 @@ urlpatterns = [
     path("profile/", views.profile_view, name="profile"),
     path("settings/", views.settings_view, name="settings"),
     path("tutorial/", views.tutorial_view, name="tutorial"),
+    path("education/", views.education_view, name="education"),
     
     # Admin Management
     path("admin-panel/", views.admin_panel, name="admin_panel"),

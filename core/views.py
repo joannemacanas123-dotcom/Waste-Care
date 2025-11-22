@@ -484,6 +484,15 @@ def tutorial_view(request):
 
 
 @login_required
+def education_view(request):
+    """Display waste segregation and recycling education for residents"""
+    if request.user.role != 'residents':
+        messages.error(request, "This educational content is designed for residents.")
+        return redirect("core:dashboard")
+    return render(request, "core/education.html")
+
+
+@login_required
 @user_passes_test(lambda u: u.role == 'admin' or u.is_superuser)
 def admin_panel(request):
     from django.db.models import Count, Avg
