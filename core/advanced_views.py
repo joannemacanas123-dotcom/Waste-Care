@@ -50,6 +50,11 @@ def advanced_dashboard(request):
 @login_required
 def appointment_calendar(request):
     """Calendar view for appointments"""
+    # Restrict to admin and staff only
+    if request.user.role == 'residents':
+        messages.error(request, "This feature is only available for admin and staff.")
+        return redirect("core:pickup_list")
+    
     try:
         # Get appointments for calendar
         if request.user.role == 'residents':
@@ -190,6 +195,11 @@ def get_recommended_times():
 @login_required
 def appointment_search(request):
     """Advanced appointment search and filtering"""
+    # Restrict to admin and staff only
+    if request.user.role == 'residents':
+        messages.error(request, "This feature is only available for admin and staff.")
+        return redirect("core:pickup_list")
+    
     appointments = Appointment.objects.all()
     
     if request.user.role == 'customer':
@@ -244,6 +254,11 @@ def appointment_search(request):
 @login_required
 def pickup_map(request):
     """Interactive map view for tracking garbage pickup locations"""
+    # Restrict to admin and staff only
+    if request.user.role == 'residents':
+        messages.error(request, "This feature is only available for admin and staff.")
+        return redirect("core:pickup_list")
+    
     # Get filter parameters
     status_filter = request.GET.get('status', '')
     date_filter = request.GET.get('date', '')

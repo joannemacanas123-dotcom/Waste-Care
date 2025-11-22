@@ -3,19 +3,24 @@
 {% block title %}Pickup Requests - Waste Care{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <div>
-    <h1 class="h2 mb-1">Pickup Requests</h1>
-    <p class="text-muted mb-0">Manage your waste pickup appointments</p>
-  </div>
-  <div>
-    <a href="{% url 'core:pickup_create' %}" class="btn btn-primary">
-      <i class="fas fa-plus me-2"></i>New Request
-    </a>
+<div class="mb-4">
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <h1 class="h2 mb-1">Pickup Requests</h1>
+      <p class="text-muted mb-0">Manage your waste pickup appointments</p>
+    </div>
+    {% if user.role == 'residents' %}
+    <div>
+      <a href="{% url 'core:pickup_create' %}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>New Request
+      </a>
+    </div>
+    {% endif %}
   </div>
 </div>
 
-<!-- Search and Filter Section -->
+<!-- Search and Filter Section (Admin/Staff Only) -->
+{% if user.role == 'admin' or user.role == 'staff' %}
 <div class="card mb-4">
   <div class="card-body">
     <form method="get" class="row g-3">
@@ -53,6 +58,7 @@
     </form>
   </div>
 </div>
+{% endif %}
 
 <!-- Results Summary -->
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -108,7 +114,7 @@
             <a href="{% url 'core:pickup_detail' a.pk %}" class="btn btn-sm btn-outline-primary flex-fill">
               <i class="fas fa-eye me-1"></i>View
             </a>
-            {% if a.customer == request.user and a.status in 'requested,scheduled' %}
+            {% if user.role == 'admin' or user.role == 'staff' %}
               <a href="{% url 'core:pickup_update' a.pk %}" class="btn btn-sm btn-outline-secondary">
                 <i class="fas fa-edit"></i>
               </a>
@@ -176,7 +182,7 @@
                   <a href="{% url 'core:pickup_detail' a.pk %}" class="btn btn-outline-primary">
                     <i class="fas fa-eye"></i>
                   </a>
-                  {% if a.customer == request.user and a.status in 'requested,scheduled' %}
+                  {% if user.role == 'admin' or user.role == 'staff' %}
                     <a href="{% url 'core:pickup_update' a.pk %}" class="btn btn-outline-secondary">
                       <i class="fas fa-edit"></i>
                     </a>
