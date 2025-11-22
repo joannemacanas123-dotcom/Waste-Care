@@ -50,33 +50,43 @@ def advanced_dashboard(request):
 @login_required
 def appointment_calendar(request):
     """Calendar view for appointments"""
-    # Get appointments for calendar
-    if request.user.role == 'residents':
-        appointments = Appointment.objects.filter(customer=request.user)
-    else:
-        appointments = Appointment.objects.all()
-    
-    # Format for calendar
-    calendar_events = []
-    for apt in appointments:
-        calendar_events.append({
-            'id': apt.id,
-            'title': f"{apt.waste_type.title()} - {apt.customer.username}",
-            'start': apt.preferred_date.isoformat(),
-            'backgroundColor': {
-                'requested': '#ffc107',
-                'scheduled': '#17a2b8',
-                'in_progress': '#fd7e14',
-                'completed': '#28a745',
-                'cancelled': '#dc3545'
-            }.get(apt.status, '#6c757d'),
-            'status': apt.status,
-            'waste_type': apt.waste_type,
-        })
-    
-    context = {
-        'calendar_events': json.dumps(calendar_events),
-    }
+    try:
+        # Get appointments for calendar
+        if request.user.role == 'residents':
+            appointments = Appointment.objects.filter(customer=request.user)
+        else:
+            appointments = Appointment.objects.all()
+        
+        # Format for calendar
+        calendar_events = []
+        for apt in appointments:
+            try:
+                calendar_events.append({
+                    'id': str(apt.id),
+                    'title': f"{apt.get_waste_type_display()} - {apt.customer.username}",
+                    'start': apt.preferred_date.isoformat(),
+                    'backgroundColor': {
+                        'pending': '#ffc107',
+                        'approved': '#17a2b8',
+                        'in_progress': '#fd7e14',
+                        'completed': '#28a745',
+                        'cancelled': '#dc3545'
+                    }.get(apt.status, '#6c757d'),
+                    'status': apt.status,
+                    'waste_type': apt.waste_type,
+                })
+            except Exception as e:
+                print(f"Error formatting appointment {apt.id}: {e}")
+                continue
+        
+        context = {
+            'calendar_events': json.dumps(calendar_events),
+        }
+    except Exception as e:
+        print(f"Error in appointment_calendar view: {e}")
+        context = {
+            'calendar_events': '[]',
+        }
     
     return render(request, 'core/appointment_calendar.html', context)
 

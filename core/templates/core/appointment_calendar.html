@@ -16,9 +16,11 @@
         </div>
         <div class="col-md-4 text-end">
             <div class="btn-group" role="group">
-                <a href="{% url 'core:smart_scheduling' %}" class="btn btn-primary">
+                {% if user.role == 'residents' %}
+                <a href="{% url 'core:pickup_create' %}" class="btn btn-primary">
                     <i class="fas fa-plus me-2"></i>New Appointment
                 </a>
+                {% endif %}
                 <button type="button" class="btn btn-outline-primary" onclick="refreshCalendar()">
                     <i class="fas fa-sync-alt"></i>
                 </button>
@@ -38,8 +40,8 @@
                         <div class="col-md-6">
                             <select class="form-select form-select-sm" id="statusFilter">
                                 <option value="">All Statuses</option>
-                                <option value="requested">Requested</option>
-                                <option value="scheduled">Scheduled</option>
+                                <option value="pending">Pending</option>
+                                <option value="approved">Approved</option>
                                 <option value="in_progress">In Progress</option>
                                 <option value="completed">Completed</option>
                                 <option value="cancelled">Cancelled</option>
@@ -68,11 +70,11 @@
                     <div class="d-flex flex-wrap gap-3">
                         <div class="d-flex align-items-center">
                             <div class="legend-color bg-warning me-2"></div>
-                            <small>Requested</small>
+                            <small>Pending</small>
                         </div>
                         <div class="d-flex align-items-center">
                             <div class="legend-color bg-info me-2"></div>
-                            <small>Scheduled</small>
+                            <small>Approved</small>
                         </div>
                         <div class="d-flex align-items-center">
                             <div class="legend-color bg-primary me-2"></div>
@@ -144,7 +146,8 @@
                         <label class="form-label">New Status</label>
                         <select class="form-select" id="newStatus" required>
                             <option value="">Select Status</option>
-                            <option value="scheduled">Scheduled</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
                             <option value="in_progress">In Progress</option>
                             <option value="completed">Completed</option>
                             <option value="cancelled">Cancelled</option>
@@ -173,7 +176,8 @@
 }
 
 #calendar {
-    height: 600px;
+    min-height: 600px;
+    background: white;
 }
 
 .fc-event {
@@ -224,70 +228,78 @@
 </style>
 
 <!-- FullCalendar CSS -->
-<link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css' rel='stylesheet' />
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
 
 <!-- FullCalendar JS -->
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
 
 <script>
+let calendar;
+let allEvents = {{ calendar_events|safe }};
+
 document.addEventListener('DOMContentLoaded', function() {
     const calendarEl = document.getElementById('calendar');
-    const calendar = new FullCalendar.Calendar(calendarEl, {
+    
+    if (!calendarEl) {
+        console.error('Calendar element not found');
+        return;
+    }
+    
+    console.log('Initializing calendar with events:', allEvents);
+    
+    calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
-        events: {% if calendar_events %}{{ calendar_events|safe }}{% else %}[]{% endif %},
+        events: allEvents,
         eventClick: function(info) {
-            showAppointmentDetails(info.event);
+            alert('Appointment: ' + info.event.title);
         },
-        eventDidMount: function(info) {
-            // Add tooltip
-            info.el.setAttribute('title', 
-                `${info.event.extendedProps.waste_type} - ${info.event.extendedProps.status}`
-            );
-        },
-        height: 'auto',
-        eventDisplay: 'block',
-        dayMaxEvents: 3,
-        moreLinkClick: 'popover'
+        height: 'auto'
     });
     
     calendar.render();
+    console.log('Calendar rendered');
     
     // Filter functionality
-    document.getElementById('statusFilter').addEventListener('change', filterCalendar);
-    document.getElementById('wasteTypeFilter').addEventListener('change', filterCalendar);
+    const statusFilter = document.getElementById('statusFilter');
+    const wasteTypeFilter = document.getElementById('wasteTypeFilter');
     
-    function filterCalendar() {
-        const statusFilter = document.getElementById('statusFilter').value;
-        const wasteTypeFilter = document.getElementById('wasteTypeFilter').value;
-        
-        const events = {% if calendar_events %}{{ calendar_events|safe }}{% else %}[]{% endif %};
-        let filteredEvents = events;
-        
-        if (statusFilter) {
-            filteredEvents = filteredEvents.filter(event => event.status === statusFilter);
-        }
-        
-        if (wasteTypeFilter) {
-            filteredEvents = filteredEvents.filter(event => event.waste_type === wasteTypeFilter);
-        }
-        
-        calendar.removeAllEvents();
-        calendar.addEventSource(filteredEvents);
+    if (statusFilter) {
+        statusFilter.addEventListener('change', filterCalendar);
     }
-    
-    window.refreshCalendar = function() {
-        location.reload();
-    };
+    if (wasteTypeFilter) {
+        wasteTypeFilter.addEventListener('change', filterCalendar);
+    }
 });
 
-let currentAppointmentId = null;
+function filterCalendar() {
+    const statusValue = document.getElementById('statusFilter').value;
+    const wasteTypeValue = document.getElementById('wasteTypeFilter').value;
+    
+    let filteredEvents = allEvents;
+    
+    if (statusValue) {
+        filteredEvents = filteredEvents.filter(event => event.status === statusValue);
+    }
+    
+    if (wasteTypeValue) {
+        filteredEvents = filteredEvents.filter(event => event.waste_type === wasteTypeValue);
+    }
+    
+    calendar.removeAllEvents();
+    calendar.addEventSource(filteredEvents);
+}
+
+function refreshCalendar() {
+    location.reload();
+}
 
 function showAppointmentDetails(event) {
+    let currentAppointmentId = event.id;
     currentAppointmentId = event.id;
     
     // Fetch detailed appointment information
@@ -357,8 +369,8 @@ function showAppointmentDetails(event) {
 
 function getStatusColor(status) {
     const colors = {
-        'requested': 'warning',
-        'scheduled': 'info',
+        'pending': 'warning',
+        'approved': 'info',
         'in_progress': 'primary',
         'completed': 'success',
         'cancelled': 'danger'

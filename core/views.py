@@ -200,6 +200,11 @@ def pickup_list(request):
 
 @login_required
 def pickup_create(request):
+    # Restrict admin and staff from creating pickups
+    if is_staff_like(request.user):
+        messages.error(request, "Admin and staff accounts cannot schedule pickups. Only residents can create pickup requests.")
+        return redirect("core:dashboard")
+    
     form = AppointmentForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         appt = form.save(commit=False)
