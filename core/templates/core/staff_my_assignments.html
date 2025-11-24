@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container-fluid">
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="fas fa-clipboard-list me-2"></i>All Assignments</h2>
+    <h2><i class="fas fa-tasks me-2"></i>My Current Assignments</h2>
     <a href="{% url 'core:staff_panel' %}" class="btn btn-secondary">
       <i class="fas fa-arrow-left me-2"></i>Back to Staff Panel
     </a>
@@ -38,12 +38,25 @@
                   <span class="badge bg-secondary">{{ assignment.get_waste_type_display }}</span>
                 </td>
                 <td>
-                  <span class="badge {% if assignment.status == 'completed' %}bg-success{% elif assignment.status == 'in_progress' %}bg-warning{% elif assignment.status == 'approved' %}bg-info{% else %}bg-secondary{% endif %}">
+                  <span class="badge {% if assignment.status == 'approved' %}bg-success{% elif assignment.status == 'in_progress' %}bg-warning{% endif %}">
                     {{ assignment.get_status_display }}
                   </span>
                 </td>
                 <td>
                   <a href="{% url 'core:pickup_detail' assignment.pk %}" class="btn btn-sm btn-primary">View</a>
+                  {% if assignment.status == 'approved' %}
+                    <form method="post" action="{% url 'core:pickup_status_update' assignment.pk %}" class="d-inline">
+                      {% csrf_token %}
+                      <input type="hidden" name="status" value="in_progress">
+                      <button type="submit" class="btn btn-sm btn-warning">Start</button>
+                    </form>
+                  {% elif assignment.status == 'in_progress' %}
+                    <form method="post" action="{% url 'core:pickup_status_update' assignment.pk %}" class="d-inline">
+                      {% csrf_token %}
+                      <input type="hidden" name="status" value="completed">
+                      <button type="submit" class="btn btn-sm btn-success">Complete</button>
+                    </form>
+                  {% endif %}
                 </td>
               </tr>
               {% endfor %}
@@ -54,9 +67,9 @@
     </div>
   {% else %}
     <div class="text-center py-5">
-      <i class="fas fa-clipboard fa-3x text-muted mb-3"></i>
-      <h4>No Assignments</h4>
-      <p class="text-muted">You don't have any assignments yet.</p>
+      <i class="fas fa-clipboard-check fa-3x text-muted mb-3"></i>
+      <h4>No Current Assignments</h4>
+      <p class="text-muted">You don't have any active assignments at the moment.</p>
     </div>
   {% endif %}
 </div>

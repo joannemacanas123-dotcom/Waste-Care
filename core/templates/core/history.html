@@ -23,7 +23,6 @@
                   <th><i class="fas fa-trash me-2"></i>Waste Type</th>
                   <th><i class="fas fa-map-marker-alt me-2"></i>Location</th>
                   <th><i class="fas fa-info-circle me-2"></i>Status</th>
-                  <th><i class="fas fa-weight me-2"></i>Weight</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -43,18 +42,9 @@
                       <div>{{ appointment.address|truncatechars:40 }}</div>
                     </td>
                     <td>
-                      <span class="badge status-{{ appointment.status }}">
+                      <span class="badge {% if appointment.status == 'completed' %}bg-success{% elif appointment.status == 'approved' %}bg-primary{% elif appointment.status == 'in_progress' %}bg-warning text-dark{% elif appointment.status == 'cancelled' %}bg-danger{% else %}bg-secondary{% endif %}">
                         {{ appointment.get_status_display }}
                       </span>
-                    </td>
-                    <td>
-                      {% if appointment.actual_weight %}
-                        {{ appointment.actual_weight }} kg
-                      {% elif appointment.estimated_weight %}
-                        ~{{ appointment.estimated_weight }} kg
-                      {% else %}
-                        —
-                      {% endif %}
                     </td>
                     <td>
                       <a href="{% url 'core:pickup_detail' appointment.pk %}" class="btn btn-sm btn-outline-primary">

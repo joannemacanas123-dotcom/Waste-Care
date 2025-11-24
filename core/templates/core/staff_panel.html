@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-user-hard-hat me-2"></i>Staff Panel</h2>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="card bg-primary text-white">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h5>Assigned Pickups</h5>
+              <h3>{{ assigned_pickups }}</h3>
+            </div>
+            <i class="fas fa-truck fa-2x"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card bg-success text-white">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h5>All Assignments</h5>
+              <h3>{{ all_assignments }}</h3>
+            </div>
+            <i class="fas fa-clipboard-list fa-2x"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card bg-info text-white">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h5>Today's Schedule</h5>
+              <h3>{{ today_schedule }}</h3>
+            </div>
+            <i class="fas fa-calendar-day fa-2x"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <div class="card">
+        <div class="card-body text-center">
+          <i class="fas fa-truck fa-3x text-primary mb-3"></i>
+          <h5>Assigned Pickups</h5>
+          <p class="text-muted">View current assigned pickup requests</p>
+          <a href="{% url 'core:staff_assigned_pickups' %}" class="btn btn-primary">View Pickups</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 mb-3">
+      <div class="card">
+        <div class="card-body text-center">
+          <i class="fas fa-clipboard-list fa-3x text-success mb-3"></i>
+          <h5>All Assignments</h5>
+          <p class="text-muted">View all your assignments history</p>
+          <a href="{% url 'core:staff_assignments' %}" class="btn btn-success">View All</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 mb-3">
+      <div class="card">
+        <div class="card-body text-center">
+          <i class="fas fa-tasks fa-3x text-warning mb-3"></i>
+          <h5>My Assignments</h5>
+          <p class="text-muted">View current active assignments</p>
+          <a href="{% url 'core:staff_my_assignments' %}" class="btn btn-warning">View Mine</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 mb-3">
+      <div class="card">
+        <div class="card-body text-center">
+          <i class="fas fa-calendar-alt fa-3x text-info mb-3"></i>
+          <h5>My Schedule</h5>
+          <p class="text-muted">View daily and weekly schedule</p>
+          <a href="{% url 'core:staff_schedule' %}" class="btn btn-info">View Schedule</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

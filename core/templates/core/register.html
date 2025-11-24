@@ -245,6 +245,25 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
+});
+
+function togglePassword(fieldId) {
+    const field = document.getElementById(fieldId);
+    const icon = fieldId.includes('password1') ? document.getElementById('toggleIcon1') : document.getElementById('toggleIcon2');
+    
+    if (field.type === 'password') {
+        field.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        field.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+} label.classList.remove('active');
+            }
+        }
+    }
     
     // Form validation enhancement
     const form = document.querySelector('form');

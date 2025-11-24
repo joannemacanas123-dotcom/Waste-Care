@@ -101,7 +101,7 @@ class AppointmentForm(forms.ModelForm):
 
 class AppointmentStatusForm(forms.ModelForm):
     handled_by = forms.ModelChoiceField(
-        queryset=User.objects.filter(role__in=['staff', 'admin']),
+        queryset=User.objects.filter(role='staff'),
         required=False,
         widget=forms.Select(attrs={'class': 'form-select'}),
         empty_label="Select staff member"

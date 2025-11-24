@@ -38,20 +38,24 @@ urlpatterns = [
     # Feedback
     path("feedback/", views.feedback_list, name="feedback_list"),
     path("feedback/new/", views.feedback_create, name="feedback_create"),
+    path("feedback/<int:pk>/edit/", views.feedback_edit, name="feedback_edit"),
     
     # Admin Management
     path("admin-panel/", views.admin_panel, name="admin_panel"),
     path("admin-panel/users/", views.manage_users, name="manage_users"),
+    path("admin-panel/staff/", views.manage_staff, name="manage_staff"),
     path("admin-panel/appointments/", views.manage_appointments, name="manage_appointments"),
     path("admin-panel/services/", views.manage_services, name="manage_services"),
     path("admin-panel/feedback/", views.manage_feedback, name="manage_feedback"),
     path("admin-panel/routes/", views.monitor_routes, name="monitor_routes"),
     path("admin-panel/reports/", views.system_reports, name="system_reports"),
     
-    # Staff Features
-    path("staff/assigned-pickups/", views.staff_assigned_pickups, name="staff_assigned_pickups"),
-    path("staff/schedule/", views.staff_schedule, name="staff_schedule"),
-    path("staff/assignments/", views.staff_assignments, name="staff_assignments"),
+    # Staff Panel
+    path("staff-panel/", views.staff_panel, name="staff_panel"),
+    path("staff-panel/assigned-pickups/", views.staff_assigned_pickups, name="staff_assigned_pickups"),
+    path("staff-panel/all-assignments/", views.staff_assignments, name="staff_assignments"),
+    path("staff-panel/my-assignments/", views.staff_my_assignments, name="staff_my_assignments"),
+    path("staff-panel/schedule/", views.staff_schedule, name="staff_schedule"),
     
     # API Endpoints
     path("api/notifications/<int:notification_id>/read/", api_views.mark_notification_read, name="api_mark_notification_read"),

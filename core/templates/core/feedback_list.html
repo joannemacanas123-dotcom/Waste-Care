@@ -51,7 +51,15 @@
             </div>
             {% endif %}
             
-            <p class="mb-0">{{ feedback.message }}</p>
+            <p class="mb-2">{{ feedback.message }}</p>
+            
+            {% if user.role == 'residents' and feedback.customer == user %}
+            <div class="mt-2">
+              <a href="{% url 'core:feedback_edit' feedback.pk %}" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-edit me-1"></i>Edit
+              </a>
+            </div>
+            {% endif %}
           </div>
         </div>
       </div>

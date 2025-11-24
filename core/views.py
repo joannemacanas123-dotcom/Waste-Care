@@ -328,6 +328,43 @@ def pickup_status_update(request, pk):
     appt = get_object_or_404(Appointment, pk=pk)
     
     if request.method == "POST":
+        # Handle staff assignment
+        handled_by_id = request.POST.get('handled_by')
+        if handled_by_id is not None:
+            if handled_by_id == '':
+                appt.handled_by = None
+                AppointmentHistory.objects.create(
+                    appointment=appt,
+                    changed_by=request.user,
+                    action="Staff Unassigned",
+                    changes="Staff assignment removed"
+                )
+                messages.success(request, "Staff unassigned successfully.")
+            else:
+                try:
+                    staff_member = User.objects.get(id=handled_by_id, role='staff')
+                    previous_staff = appt.handled_by
+                    appt.handled_by = staff_member
+                    
+                    AppointmentHistory.objects.create(
+                        appointment=appt,
+                        changed_by=request.user,
+                        action="Staff Assigned",
+                        changes=f"Assigned to: {staff_member.username}" + (f" (previously: {previous_staff.username})" if previous_staff else "")
+                    )
+                    
+                    Notification.objects.create(
+                        user=staff_member,
+                        message=f"You have been assigned to pickup #{appt.id} for {appt.customer.username} on {appt.preferred_date}.",
+                        appointment=appt
+                    )
+                    
+                    messages.success(request, f"Appointment assigned to {staff_member.username}.")
+                except User.DoesNotExist:
+                    messages.error(request, "Invalid staff member selected.")
+            appt.save()
+            return redirect("core:manage_appointments")
+        
         # Handle simple status update from manage appointments
         new_status = request.POST.get('status')
         if new_status and new_status in dict(Appointment.STATUS_CHOICES):
@@ -337,7 +374,6 @@ def pickup_status_update(request, pk):
             if appt.status == "completed" and previous_status != "completed":
                 appt.updated_at = timezone.now()
             
-            appt.handled_by = request.user if appt.status != 'pending' else None
             appt.save()
             
             if previous_status != appt.status:
@@ -514,9 +550,32 @@ def manage_users(request):
 
 @login_required
 @user_passes_test(lambda u: u.role == 'admin' or u.is_superuser)
+def manage_staff(request):
+    from django.db import models
+    staff_members = User.objects.filter(role='staff').annotate(
+        assigned_count=Count('handled_appointments', filter=models.Q(handled_appointments__status__in=['pending', 'approved', 'in_progress']))
+    ).order_by('username')
+    
+    unassigned_appointments = Appointment.objects.filter(
+        handled_by__isnull=True, 
+        status__in=['pending', 'approved']
+    ).select_related('customer').order_by('-created_at')
+    
+    return render(request, "core/manage_staff.html", {
+        'staff_members': staff_members,
+        'unassigned_appointments': unassigned_appointments
+    })
+
+
+@login_required
+@user_passes_test(lambda u: u.role == 'admin' or u.is_superuser)
 def manage_appointments(request):
     appointments = Appointment.objects.select_related('customer', 'handled_by').order_by('-created_at')
-    return render(request, "core/manage_appointments.html", {'appointments': appointments})
+    staff_members = User.objects.filter(role='staff').order_by('username')
+    return render(request, "core/manage_appointments.html", {
+        'appointments': appointments,
+        'staff_members': staff_members
+    })
 
 
 @login_required
@@ -576,31 +635,25 @@ def staff_assigned_pickups(request):
 @login_required
 @user_passes_test(lambda u: u.role in ['staff', 'admin'])
 def staff_schedule(request):
-    """View daily/weekly schedule for staff"""
-    from datetime import datetime, timedelta
-    
+    """View my schedule"""
     today = timezone.now().date()
     week_start = today - timedelta(days=today.weekday())
     week_end = week_start + timedelta(days=6)
     
-    # Get appointments for current week
-    weekly_appointments = Appointment.objects.filter(
-        handled_by=request.user,
-        preferred_date__range=[week_start, week_end]
-    ).select_related('customer').order_by('preferred_date', 'preferred_time')
-    
-    # Get today's appointments
     daily_appointments = Appointment.objects.filter(
         handled_by=request.user,
         preferred_date=today
     ).select_related('customer').order_by('preferred_time')
     
+    weekly_appointments = Appointment.objects.filter(
+        handled_by=request.user,
+        preferred_date__range=[week_start, week_end]
+    ).select_related('customer').order_by('preferred_date', 'preferred_time')
+    
     context = {
         'daily_appointments': daily_appointments,
         'weekly_appointments': weekly_appointments,
         'today': today,
-        'week_start': week_start,
-        'week_end': week_end,
     }
     
     return render(request, "core/staff_schedule.html", context)
@@ -608,25 +661,50 @@ def staff_schedule(request):
 
 @login_required
 @user_passes_test(lambda u: u.role in ['staff', 'admin'])
+def staff_panel(request):
+    """Staff panel dashboard"""
+    assigned_pickups = Appointment.objects.filter(
+        handled_by=request.user,
+        status__in=['approved', 'in_progress']
+    ).count()
+    
+    all_assignments = Appointment.objects.filter(handled_by=request.user).count()
+    
+    today_schedule = Appointment.objects.filter(
+        handled_by=request.user,
+        preferred_date=timezone.now().date()
+    ).count()
+    
+    context = {
+        'assigned_pickups': assigned_pickups,
+        'all_assignments': all_assignments,
+        'today_schedule': today_schedule,
+    }
+    
+    return render(request, "core/staff_panel.html", context)
+
+
+@login_required
+@user_passes_test(lambda u: u.role in ['staff', 'admin'])
 def staff_assignments(request):
-    """View assignments from admin"""
-    # Get all appointments assigned to this staff member
+    """View all assignments"""
     assignments = Appointment.objects.filter(
         handled_by=request.user
     ).select_related('customer').order_by('-created_at')
     
-    # Get recent notifications about assignments
-    assignment_notifications = Notification.objects.filter(
-        user=request.user,
-        message__icontains='assigned'
-    ).order_by('-created_at')[:10]
+    return render(request, "core/staff_assignments.html", {'assignments': assignments})
+
+
+@login_required
+@user_passes_test(lambda u: u.role in ['staff', 'admin'])
+def staff_my_assignments(request):
+    """View my current assignments"""
+    my_assignments = Appointment.objects.filter(
+        handled_by=request.user,
+        status__in=['approved', 'in_progress']
+    ).select_related('customer').order_by('preferred_date', 'preferred_time')
     
-    context = {
-        'assignments': assignments,
-        'assignment_notifications': assignment_notifications,
-    }
-    
-    return render(request, "core/staff_assignments.html", context)
+    return render(request, "core/staff_my_assignments.html", {'assignments': my_assignments})
 
 
 @login_required
@@ -655,4 +733,23 @@ def feedback_create(request):
     else:
         form = FeedbackForm(user=request.user)
     
-    return render(request, "core/feedback_form.html", {'form': form})
+    return render(request, "core/feedback_form.html", {'form': form, 'is_edit': True})
+
+
+@login_required
+def feedback_edit(request, pk):
+    """Edit existing feedback"""
+    from .forms import FeedbackForm
+    
+    feedback = get_object_or_404(Feedback, pk=pk, customer=request.user)
+    
+    if request.method == 'POST':
+        form = FeedbackForm(request.POST, instance=feedback, user=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Feedback updated successfully!")
+            return redirect('core:feedback_list')
+    else:
+        form = FeedbackForm(instance=feedback, user=request.user)
+    
+    return render(request, "core/feedback_form.html", {'form': form, 'feedback': feedback})

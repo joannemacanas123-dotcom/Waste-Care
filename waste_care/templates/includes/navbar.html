@@ -54,6 +54,14 @@
           </a>
         </li>
         
+        {% if user.role == 'staff' or user.role == 'admin' %}
+        <li class="nav-item">
+          <a class="nav-link {% if 'staff' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'core:staff_panel' %}">
+            <i class="fas fa-user-hard-hat me-2"></i>Staff Panel
+          </a>
+        </li>
+        {% endif %}
+        
         {% if user.role == 'admin' or user.is_superuser %}
         <li class="nav-item">
           <a class="nav-link {% if request.resolver_match.url_name == 'admin_panel' %}active{% endif %}" href="{% url 'core:admin_panel' %}">
@@ -62,24 +70,7 @@
         </li>
         {% endif %}
         
-        {% if user.role == 'staff' or user.role == 'admin' %}
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle {% if 'staff' in request.resolver_match.url_name %}active{% endif %}" href="#" id="staffDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-hard-hat me-2"></i>Staff Panel
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{% url 'core:staff_assigned_pickups' %}">
-              <i class="fas fa-tasks me-2"></i>Assigned Pickups
-            </a></li>
-            <li><a class="dropdown-item" href="{% url 'core:staff_schedule' %}">
-              <i class="fas fa-calendar-alt me-2"></i>My Schedule
-            </a></li>
-            <li><a class="dropdown-item" href="{% url 'core:staff_assignments' %}">
-              <i class="fas fa-clipboard-list me-2"></i>All Assignments
-            </a></li>
-          </ul>
-        </li>
-        {% endif %}
+
         
         {% if user.role == 'residents' %}
         <li class="nav-item">

@@ -36,6 +36,35 @@
           <td>
             <div class="d-flex gap-1 flex-wrap">
               <a href="{% url 'core:pickup_detail' appt.pk %}" class="btn btn-sm btn-primary">View</a>
+              
+              <!-- Staff Assignment Dropdown -->
+              <div class="dropdown">
+                <button class="btn btn-sm btn-info dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                  Assign Staff
+                </button>
+                <div class="dropdown-menu p-2" style="min-width: 200px;">
+                  <h6 class="dropdown-header">Assign to Staff:</h6>
+                  {% for staff in staff_members %}
+                  <form method="post" action="{% url 'core:pickup_status_update' appt.pk %}" class="mb-1">
+                    {% csrf_token %}
+                    <input type="hidden" name="handled_by" value="{{ staff.id }}">
+                    <button type="submit" class="btn btn-sm btn-outline-primary w-100 text-start">
+                      <i class="fas fa-user me-2"></i>{{ staff.username }}
+                    </button>
+                  </form>
+                  {% endfor %}
+                  <hr class="dropdown-divider">
+                  <form method="post" action="{% url 'core:pickup_status_update' appt.pk %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="handled_by" value="">
+                    <button type="submit" class="btn btn-sm btn-outline-secondary w-100">
+                      <i class="fas fa-times me-2"></i>Unassign
+                    </button>
+                  </form>
+                </div>
+              </div>
+              
+              <!-- Status Update Dropdown -->
               <div class="dropdown">
                 <button class="btn btn-sm btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown">
                   Update Status

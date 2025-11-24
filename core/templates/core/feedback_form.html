@@ -8,7 +8,7 @@
     <div class="col-lg-8">
       <div class="card shadow-sm">
         <div class="card-header bg-primary text-white">
-          <h4 class="mb-0"><i class="fas fa-comment-dots me-2"></i>Submit Feedback</h4>
+          <h4 class="mb-0"><i class="fas fa-comment-dots me-2"></i>{% if feedback %}Edit Feedback{% else %}Submit Feedback{% endif %}</h4>
         </div>
         <div class="card-body">
           <form method="post">
@@ -16,10 +16,10 @@
             
             <div class="mb-4">
               <label class="form-label">{{ form.rating.label }}</label>
-              <div class="star-rating">
-                {% for choice in form.rating.field.choices %}
-                  <input type="radio" name="rating" id="star{{ choice.0 }}" value="{{ choice.0 }}" {% if form.rating.value == choice.0|stringformat:"s" %}checked{% endif %}>
-                  <label for="star{{ choice.0 }}"><i class="fas fa-star"></i></label>
+              <div class="star-rating" id="starRating">
+                {% for i in "54321" %}
+                  <input type="radio" name="rating" id="star{{ i }}" value="{{ i }}" {% if form.rating.value == i %}checked{% endif %}>
+                  <label for="star{{ i }}" class="star-label" data-rating="{{ i }}"><i class="fas fa-star"></i></label>
                 {% endfor %}
               </div>
               {% if form.rating.errors %}
@@ -45,7 +45,7 @@
             
             <div class="d-flex gap-2">
               <button type="submit" class="btn btn-primary">
-                <i class="fas fa-paper-plane me-2"></i>Submit Feedback
+                <i class="fas fa-{% if feedback %}save{% else %}paper-plane{% endif %} me-2"></i>{% if feedback %}Update Feedback{% else %}Submit Feedback{% endif %}
               </button>
               <a href="{% url 'core:feedback_list' %}" class="btn btn-secondary">
                 <i class="fas fa-times me-2"></i>Cancel
@@ -64,23 +64,72 @@
   flex-direction: row-reverse;
   justify-content: flex-end;
   gap: 5px;
+  margin-bottom: 10px;
 }
 
 .star-rating input {
   display: none;
 }
 
-.star-rating label {
+.star-rating .star-label {
   cursor: pointer;
   font-size: 2rem;
   color: #ddd;
-  transition: color 0.2s;
+  transition: color 0.2s ease;
 }
 
-.star-rating input:checked ~ label,
-.star-rating label:hover,
-.star-rating label:hover ~ label {
+.star-rating .star-label:hover {
+  color: #ffc107;
+}
+
+.star-rating .star-label.active {
   color: #ffc107;
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const starRating = document.getElementById('starRating');
+    const starLabels = starRating.querySelectorAll('.star-label');
+    const radioInputs = starRating.querySelectorAll('input[type="radio"]');
+    
+    // Set initial state
+    updateStarDisplay();
+    
+    starLabels.forEach(label => {
+        label.addEventListener('click', function() {
+            const rating = this.dataset.rating;
+            const radioInput = document.getElementById('star' + rating);
+            radioInput.checked = true;
+            updateStarDisplay();
+        });
+        
+        label.addEventListener('mouseenter', function() {
+            const rating = parseInt(this.dataset.rating);
+            highlightStars(rating);
+        });
+    });
+    
+    starRating.addEventListener('mouseleave', function() {
+        updateStarDisplay();
+    });
+    
+    function updateStarDisplay() {
+        const checkedInput = starRating.querySelector('input[type="radio"]:checked');
+        const rating = checkedInput ? parseInt(checkedInput.value) : 0;
+        highlightStars(rating);
+    }
+    
+    function highlightStars(rating) {
+        starLabels.forEach(label => {
+            const starRating = parseInt(label.dataset.rating);
+            if (starRating <= rating) {
+                label.classList.add('active');
+            } else {
+                label.classList.remove('active');
+            }
+        });
+    }
+});
+</script>
 {% endblock %}
