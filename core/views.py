@@ -39,19 +39,7 @@ class LoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
 
 
-class RegisterForm(forms.ModelForm):
-    password1 = forms.CharField(widget=forms.PasswordInput)
-    password2 = forms.CharField(widget=forms.PasswordInput)
 
-    class Meta:
-        model = User
-        fields = ("username", "email", "role")
-
-    def clean(self):
-        cleaned = super().clean()
-        if cleaned.get("password1") != cleaned.get("password2"):
-            raise forms.ValidationError("Passwords do not match")
-        return cleaned
 
 
 def is_staff_like(user: User) -> bool:

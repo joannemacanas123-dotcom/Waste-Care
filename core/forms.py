@@ -276,8 +276,11 @@ class RegisterForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Remove admin role from choices
-        self.fields['role'].choices = [choice for choice in User.ROLE_CHOICES if choice[0] != 'admin']
+        # Remove admin role from choices - only allow residents and staff
+        self.fields['role'].choices = [
+            ('residents', 'Residents'),
+            ('staff', 'Staff')
+        ]
 
     def clean_password2(self):
         password1 = self.cleaned_data.get('password1')
