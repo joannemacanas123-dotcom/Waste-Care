@@ -4,9 +4,12 @@
 
 {% block content %}
 <div class="mb-4">
-  <div>
-    <h1 class="h2 mb-1">Pickup Requests</h1>
-    <p class="text-muted mb-0">Manage your waste pickup appointments</p>
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <h1 class="h2 mb-1">Pickup Requests</h1>
+      <p class="text-muted mb-0">Manage your waste pickup appointments</p>
+    </div>
+
   </div>
 </div>
 
@@ -57,14 +60,15 @@
     <span class="text-muted">{{ appointments|length }} appointment{{ appointments|length|pluralize }} found</span>
   </div>
   <div class="btn-group" role="group">
-    <input type="radio" class="btn-check" name="view" id="grid-view" checked>
-    <label class="btn btn-outline-secondary btn-sm" for="grid-view">
-      <i class="fas fa-th"></i>
-    </label>
-    <input type="radio" class="btn-check" name="view" id="list-view">
-    <label class="btn btn-outline-secondary btn-sm" for="list-view">
-      <i class="fas fa-list"></i>
-    </label>
+      <input type="radio" class="btn-check" name="view" id="grid-view" checked>
+      <label class="btn btn-outline-secondary btn-sm" for="grid-view">
+        <i class="fas fa-th"></i>
+      </label>
+      <input type="radio" class="btn-check" name="view" id="list-view">
+      <label class="btn btn-outline-secondary btn-sm" for="list-view">
+        <i class="fas fa-list"></i>
+      </label>
+    </div>
   </div>
 </div>
 
@@ -128,6 +132,7 @@
           {% endif %}
         </p>
 
+
       </div>
     </div>
   {% endfor %}
@@ -183,6 +188,15 @@
     </div>
   </div>
 </div>
+<!-- Floating Action Button for Residents -->
+{% if user.role == 'residents' %}
+<div class="position-fixed" style="bottom: 30px; right: 30px; z-index: 1000;">
+  <a href="{% url 'core:pickup_create' %}" class="btn btn-success btn-lg rounded-circle shadow-lg" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;" title="Schedule Pickup">
+    <i class="fas fa-plus fa-lg"></i>
+  </a>
+</div>
+{% endif %}
+
 {% endblock %}
 
 {% block extra_js %}

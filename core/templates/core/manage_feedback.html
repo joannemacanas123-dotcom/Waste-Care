@@ -8,6 +8,7 @@
       <thead>
         <tr>
           <th>Customer</th>
+          <th>Rating</th>
           <th>Message</th>
           <th>Date</th>
         </tr>
@@ -16,6 +17,18 @@
         {% for feedback in feedbacks %}
         <tr>
           <td>{{ feedback.customer.username }}</td>
+          <td>
+            <div class="text-warning">
+              {% for i in "12345" %}
+                {% if forloop.counter <= feedback.rating %}
+                  <i class="fas fa-star"></i>
+                {% else %}
+                  <i class="far fa-star"></i>
+                {% endif %}
+              {% endfor %}
+              <span class="ms-1">({{ feedback.rating }}/5)</span>
+            </div>
+          </td>
           <td>{{ feedback.message }}</td>
           <td>{{ feedback.created_at|date:"M d, Y g:i A" }}</td>
         </tr>

@@ -627,3 +627,32 @@ def staff_assignments(request):
     }
     
     return render(request, "core/staff_assignments.html", context)
+
+
+@login_required
+def feedback_list(request):
+    """View feedback list"""
+    if is_staff_like(request.user):
+        feedbacks = Feedback.objects.select_related('customer', 'appointment').order_by('-created_at')
+    else:
+        feedbacks = Feedback.objects.filter(customer=request.user).select_related('appointment').order_by('-created_at')
+    return render(request, "core/feedback_list.html", {'feedbacks': feedbacks})
+
+
+@login_required
+def feedback_create(request):
+    """Create new feedback"""
+    from .forms import FeedbackForm
+    
+    if request.method == 'POST':
+        form = FeedbackForm(request.POST, user=request.user)
+        if form.is_valid():
+            feedback = form.save(commit=False)
+            feedback.customer = request.user
+            feedback.save()
+            messages.success(request, "Thank you for your feedback!")
+            return redirect('core:feedback_list')
+    else:
+        form = FeedbackForm(user=request.user)
+    
+    return render(request, "core/feedback_form.html", {'form': form})

@@ -35,6 +35,10 @@ urlpatterns = [
     path("tutorial/", views.tutorial_view, name="tutorial"),
     path("education/", views.education_view, name="education"),
     
+    # Feedback
+    path("feedback/", views.feedback_list, name="feedback_list"),
+    path("feedback/new/", views.feedback_create, name="feedback_create"),
+    
     # Admin Management
     path("admin-panel/", views.admin_panel, name="admin_panel"),
     path("admin-panel/users/", views.manage_users, name="manage_users"),

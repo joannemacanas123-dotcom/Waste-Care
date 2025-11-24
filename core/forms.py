@@ -123,8 +123,15 @@ class AppointmentStatusForm(forms.ModelForm):
 class FeedbackForm(forms.ModelForm):
     class Meta:
         model = Feedback
-        fields = ['message']
+        fields = ['appointment', 'rating', 'message']
         widgets = {
+            'appointment': forms.Select(attrs={
+                'class': 'form-select',
+                'placeholder': ' '
+            }),
+            'rating': forms.RadioSelect(attrs={
+                'class': 'rating-input'
+            }),
             'message': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 4,
@@ -133,8 +140,19 @@ class FeedbackForm(forms.ModelForm):
             })
         }
         labels = {
+            'appointment': 'Related Appointment (Optional)',
+            'rating': 'Rate Our Service',
             'message': 'Your Feedback'
         }
+    
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields['appointment'].queryset = Appointment.objects.filter(
+                customer=user, status='completed'
+            ).order_by('-completion_datetime')
+            self.fields['appointment'].required = False
     
     def clean_message(self):
         message = self.cleaned_data.get('message')

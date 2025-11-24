@@ -98,7 +98,7 @@ class ServiceHistory(models.Model):
     staff_notes = models.TextField(blank=True)
 
     def __str__(self):
-        return f"History for {self.appointment_id}"
+        return f"History for {self.appointment.id}"
 
 
 class AppointmentHistory(models.Model):
@@ -112,7 +112,7 @@ class AppointmentHistory(models.Model):
         ordering = ['-timestamp']
     
     def __str__(self):
-        return f"{self.appointment_id} - {self.action} at {self.timestamp}"
+        return f"{self.appointment.id} - {self.action} at {self.timestamp}"
 
 
 class Article(models.Model):
@@ -137,8 +137,16 @@ class JournalEntry(models.Model):
 
 class Feedback(models.Model):
     customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="feedbacks")
+    appointment = models.ForeignKey(Appointment, on_delete=models.SET_NULL, null=True, blank=True, related_name="feedbacks")
+    rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)], help_text="Rating from 1 to 5 stars")
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.customer.username} - {self.rating} stars"
 
 
 class Notification(models.Model):
